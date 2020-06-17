@@ -44,14 +44,14 @@ public abstract class DigitTree<E> {
 
     // -----------------------------------------------------------------------
 
-    // Sequence Init (Initialize)
+    // Set Sequence Init (Initialize)
     public abstract boolean init(double id, E element);
 
     public abstract boolean init(int id, E element);
 
     public abstract boolean init(long id, E element);
 
-    // Sequence Con (Conclude)
+    // Set equence Con (Conclude)
     public abstract boolean con(double id);
 
     public abstract boolean con(int id);
@@ -72,6 +72,20 @@ public abstract class DigitTree<E> {
     public abstract boolean insertA(int id, E element);
 
     public abstract boolean insertA(long id, E element);
+    
+    // Insert as Initial in new Sequence
+    public abstract boolean insertInit(double id, E element);
+
+    public abstract boolean insertInit(int id, E element);
+
+    public abstract boolean insertInit(long id, E element);
+
+    // Insert as optional Termainal in Sequence
+    public abstract boolean insertTerm(double id, E element);
+
+    public abstract boolean insertTerm(int id, E element);
+
+    public abstract boolean insertTerm(long id, E element);
 
     // Sequential Retrieval
     public abstract DigitTree<E> tNext(double id);
