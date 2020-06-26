@@ -182,9 +182,12 @@ public class DecTree<E> extends DigitTree<E> {
     }
 
     @Override
-    public boolean eReplace(double ident, E element) {
-        DecTree<E> opTree = this.tGet(ident);
-        
+    public DigitNode<E> eReplace(double ident, E element) {
+        DecTree<E> tree = this.tGet(ident);
+        DigitNode<E> retNode = tree.node;
+        tree.node = new DigitNode<E>(retNode, element);
+        return retNode;
+
     }
 
     @Override

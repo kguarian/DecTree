@@ -6,14 +6,50 @@ public class DecTreeTester {
     DigitTree<Double> srcInt;
     DigitTree<String> strTree;
     DigitTree<Double> intTree;
+    int testNum = 0;
+    int retVal = 0;
 
     public void before() {
         this.strTree = new DecTree<String>();
         this.intTree = new DecTree<Double>();
+        System.out.printf("Test %s begin:\n", testNum);
+        retVal = 0;
     }
 
-    public void treeAddGet() {
+    /**
+     * Println: Test [caseNumber] passed [2 x NewLine]
+     * @return 0
+     */
+    public int afterPass() {
+        System.out.printf("Test %s passed.\n\n", testNum++);
+        return 0;
+    }
+
+    /**
+     * Println: Test [caseNumber] FAILED. NO FURTHER DETAILS NOTED.
+     * 
+     * @return parametrized exit Code
+     */
+    public int afterFail(int exitCode) {
+        System.out.println("Test %s FAILED. NO FURTHER DETAILS NOTED.");
+        testNum++;
+        return exitCode;
+    }
+
+    /**
+     * Println: Test [caseNumber] FAILED. [parametrized failInfo string]
+     * 
+     * @return parametrized exit Code
+     */
+    public int afterFail(String failInfo, int exitCode) {
+        System.out.printf("Test %s FAILED. failINFO:%s\n", testNum++);
+        return exitCode;
+    }
+
+    public int treeAddGet() {
         double halfTestRange = 9000;
+        
+        //
         this.before();
         for (double i = -halfTestRange; i < halfTestRange; i++) {
             this.intTree.add(i, i);
@@ -22,22 +58,20 @@ public class DecTreeTester {
         System.out.println("set all");
         for (double i = -halfTestRange; i < halfTestRange; i++) {
             if (this.intTree.tGet(i) == null || this.strTree.tGet(i) == null) {
-                System.out.println("Failed retrieval type 1 (null Tree) at index " + i);
-                System.exit(1);
+                return afterFail("Failed retrieval type 1 (null Tree) at index " + i, 1);
             }
         }
-        System.out.println("treeAddGet() passed");
+        return afterPass();
     }
 
-    public static void main(String[] args) {
-        ArrayList<String> isItPossible = new ArrayList<String>();
-        ArrayList<Double> isItPossible2 = new ArrayList<Double>();
-        for (double i = -9000; i < 9000; i++) {
-            isItPossible.add(Double.toString(i));
-            isItPossible2.add(i);
-        }
-        System.out.println("possible\n");
+    public static void testAll(String[] args) {
+
         DecTreeTester tester = new DecTreeTester();
         tester.treeAddGet();
+    }
+    
+    @SuppressWarnings("all")
+    public static void main(String[] args) {
+        new DecTreeTester().testAll(args);
     }
 }

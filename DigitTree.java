@@ -19,7 +19,7 @@ public abstract class DigitTree<E> {
     // Value Replacement Methods
 
     // Element Replacement
-    public abstract boolean eReplace(double id, E element);
+    public abstract DigitNode<E> eReplace(double id, E element);
 
     // Tree Replacement
     public abstract boolean tReplace(double id, DigitTree<E> tree);

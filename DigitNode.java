@@ -31,6 +31,8 @@ public class DigitNode<E> {
         this.element = element;
         this.pro = copySubject.pro;
         this.anti = copySubject.anti;
+        copySubject.anti.pro = this;
+        copySubject.pro.anti = this;
     }
 
     public DigitNode(E element) {
@@ -55,6 +57,8 @@ public class DigitNode<E> {
         return element;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     public boolean equals(Object o) {
         try{
             return this.equals((DigitNode<E>) o);
