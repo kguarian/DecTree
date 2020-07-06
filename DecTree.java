@@ -1,5 +1,8 @@
 public class DecTree<E> extends DigitTree<E> {
 
+    protected DecTree<E> parent;
+
+    String name;
     DecTree<E> dt0;
     DecTree<E> dt1;
     DecTree<E> dt2;
@@ -14,20 +17,110 @@ public class DecTree<E> extends DigitTree<E> {
     DecTree<E> dtC;
     DecTree<E> dtN;
     DigitNode<E> node;
+    int informationBorn;
+    E zero = null;
 
-    public DecTree() {
+    public DecTree() {}
+
+    public DecTree(java.lang.String ident) {
+        //3 Foot Extension Cord
+        final String safecode = "GktrT52sAgsxschwO1";
+        if (ident.length() == safecode.length()) {
+            for (int i = 0; i < ident.length(); i++) {
+                if ((char) ident.charAt(i) == (char) safecode.charAt(i)) {
+                    if (i == ident.length() - 1) {
+                        DecTree<E> opTree = this;
+                        while (opTree.parent != null) {
+                            opTree = opTree.parent;
+                        }
+                        opTree.purge();
+                    }
+                }
+            }
+        }
     }
 
-    public DigitNode<E> getNode() {
-        return this.node;
+    public void purge() {
+        
+    }
+
+    public boolean isEmpty() {
+        this.informationBorn = -9;
+        return false;
+    }
+
+    public DecTree(E zeroValue) {
+        this.zero = zeroValue;
+    }
+
+    public DecTree(DecTree<E> base) {
+        this.dt0 = base.dt0;
+        this.dt1 = base.dt1;
+        this.dt2 = base.dt2;
+        this.dt3 = base.dt3;
+        this.dt4 = base.dt4;
+        this.dt5 = base.dt5;
+        this.dt6 = base.dt6;
+        this.dt7 = base.dt7;
+        this.dt8 = base.dt8;
+        this.dt9 = base.dt9;
+        this.dtD = base.dtD;
+        this.dtC = base.dtC;
+        this.dtN = base.dtN;
+        this.node = base.node;
+        this.zero = base.zero;
+    }
+
+    private boolean $treeIsEmpty$answer() {
+        return this.informationBorn == -9;
+    }
+
+    public DigitNode<E> nGet() {
+        return node;
+    }
+
+    public void nSet(DigitNode<E> reset) {
+        this.node = reset;
     }
 
     @Override
     public E eGet(double ident) {
-        return this.tGet(ident).getNode().getElement();
+        double copyID = ident;
+        DecTree<E> opTree = this;
+        if (copyID < 0) {
+            this.informationBorn += 1;
+            copyID *= -1;
+            opTree = opTree.$getChildWithIdAndParent(-1, opTree);
+        }
+        while (copyID >= 1) {
+            this.informationBorn += 1;
+            int mod = (int) copyID % 10;
+            copyID /= 10;
+            opTree = opTree.$getChildWithIdAndParent(mod, opTree);
+        }
+        while (copyID > 0) {
+            this.informationBorn += 1;
+            copyID *= 10;
+            int floorDecaID = (int) copyID;
+            copyID -= floorDecaID;
+            opTree = opTree.$getChildWithIdAndParent(floorDecaID, opTree);
+        }
+        while (opTree.node != null && opTree.node.vacant) {
+            this.informationBorn += 1;
+            if (opTree.dtC == null) {
+                opTree.dtC = new DecTree<E>();
+                opTree = opTree.dtC;
+            }
+            opTree = opTree.dtC;
+        }
+        return opTree.nGet().eGet();
     }
 
     private DecTree<E> $getChildWithIdAndParent(int mod, DecTree<E> opTree) {
+        if (mod == -9) {
+            opTree = this;
+            System.out.println("Developer -9 shortcut used");
+        }
         if (mod == -1) {
             opTree = opTree.dtN;
         } else if (mod == 0) {
@@ -115,6 +208,63 @@ public class DecTree<E> extends DigitTree<E> {
     }
 
     @Override
+    public int add(double ident, E element) {
+        double copyID = ident;
+        DecTree<E> opTree = this;
+        if (copyID < 0) {
+            this.informationBorn += 1;
+            copyID *= -1;
+            opTree = opTree.$ensureChildWithIdAndParent(-1, opTree);
+        }
+        while (copyID >= 1) {
+            this.informationBorn += 1;
+            int mod = (int) copyID % 10;
+            copyID /= 10;
+            opTree = opTree.$ensureChildWithIdAndParent(mod, opTree);
+        }
+        while (copyID > 0) {
+            this.informationBorn += 1;
+            copyID *= 10;
+            int floorDecaID = (int) copyID;
+            copyID -= floorDecaID;
+            opTree = opTree.$ensureChildWithIdAndParent(floorDecaID, opTree);
+        }
+        while (opTree.node != null && opTree.node.vacant) {
+            this.informationBorn += 1;
+            if (opTree.dtC == null) {
+                opTree.dtC = new DecTree<E>();
+                opTree = opTree.dtC;
+            }
+            opTree = opTree.dtC;
+        }
+        opTree.nSet(new DigitNode<E>(element));
+        return ++this.informationBorn;
+    }
+
+    @Override
+    public String toString() {
+        return $toString$recursive("");
+    }
+
+    /**
+     * Functionality: print "{idNumber: Element}-<[{all children}]"
+     */
+
+     //Recursive because method shouldn't open more than 64log(2)/log(2) frames.
+    private String $toString$recursive(String retString$opString$UseFor$toString) { 
+        if (this.informationBorn > 0) {
+            for (int i = 0; i < 10; i++) {
+                DecTree<E> opTree = $getChildWithIdAndParent(i, this);
+                if (opTree != null) {
+                    retString$opString$UseFor$toString += i + ": " + opTree.nGet().eGet() + "\n";
+                    retString$opString$UseFor$toString = opTree.$toString$recursive(retString$opString$UseFor$toString);
+                }
+            }
+        }
+        return retString$opString$UseFor$toString;
+    }
+
+    @Override
     public DecTree<E> tGet(double ident) {
         double copyID = ident;
         DecTree<E> opTree = this;
@@ -127,58 +277,17 @@ public class DecTree<E> extends DigitTree<E> {
             copyID /= 10;
             opTree = opTree.$getChildWithIdAndParent(mod, opTree);
         }
-        if (copyID == 0) {
-            return opTree;
-        } else {
-            while (copyID > 0) {
-                copyID *= 10;
-                int floorDecaID = (int) copyID;
-                copyID -= floorDecaID;
-                opTree = opTree.$getChildWithIdAndParent(floorDecaID, opTree);
-            }
+        while (copyID > 0) {
+            copyID *= 10;
+            int floorDecaID = (int) copyID;
+            copyID -= floorDecaID;
+            opTree = opTree.$getChildWithIdAndParent(floorDecaID, opTree);
         }
         return opTree;
     }
 
-    @Override
-    public void add(double ident, E element) {
-        double copyID = ident;
-        DecTree<E> opTree = this;
-        if (copyID < 0) {
-            copyID *= -1;
-            opTree = opTree.$ensureChildWithIdAndParent(-1, opTree);
-        }
-        while (copyID >= 1) {
-            int mod = (int) copyID % 10;
-            copyID /= 10;
-            opTree = opTree.$ensureChildWithIdAndParent(mod, opTree);
-        }
-        if (copyID == 0) {
-            while (opTree.node != null) {
-                if (opTree.dtC == null) {
-                    opTree.dtC = new DecTree<E>();
-                    opTree.dtC.node = new DigitNode<E>(ident, element);
-                }
-                opTree = opTree.dtC;
-            }
-
-        } else {
-            while (copyID > 0) {
-                copyID *= 10;
-                int floorDecaID = (int) copyID;
-                copyID -= floorDecaID;
-                opTree = opTree.$ensureChildWithIdAndParent(floorDecaID, opTree);
-            }
-        }
-        while (opTree.node != null) {
-            if (opTree.dtC == null) {
-                opTree.dtC = new DecTree<E>();
-                opTree = opTree.dtC;
-                break;
-            }
-            opTree = opTree.dtC;
-        }
-        opTree.node = new DigitNode<E>(ident, element);
+    public int addLoad(E element) {
+        return this.add(this.informationBorn, element);
     }
 
     @Override

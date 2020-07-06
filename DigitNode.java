@@ -1,18 +1,25 @@
 public class DigitNode<E> {
 
+    boolean vacant = true;
     double id;
     E element;
     DigitNode<E> pro;
     DigitNode<E> anti;
 
+    public final boolean privacySeal = true;
+
     public DigitNode(double id, E element) {
         this.id = id;
+        this.element = element;
     }
 
     /**
      * creates deep copy of parametrized DigitNode
      */
     public DigitNode(DigitNode<E> copySubject) {
+        if (copySubject == null){
+            return;
+        }
         this.id = copySubject.id;
         this.element = copySubject.element;
         this.pro = copySubject.pro;
@@ -27,6 +34,12 @@ public class DigitNode<E> {
      * @param element     replacement value.
      */
     public DigitNode(DigitNode<E> copySubject, E element) {
+        if (copySubject == null) {
+            this.vacant = false;
+            this.element = element;
+            return;
+        }
+        this.vacant = false;
         this.id = copySubject.id;
         this.element = element;
         this.pro = copySubject.pro;
@@ -36,10 +49,12 @@ public class DigitNode<E> {
     }
 
     public DigitNode(E element) {
+        this.vacant = false;
         this.element = element;
     }
 
     public DigitNode(DigitNode<E> proSequence, DigitNode<E> antiSequence, E element) {
+        this.vacant = false;
         this.pro = proSequence;
         this.anti = antiSequence;
         this.element = element;
@@ -53,8 +68,12 @@ public class DigitNode<E> {
         this.pro = pro;
     }
 
-    public E getElement() {
-        return element;
+    public E eGet() {
+        return this.element;
+    }
+
+    public void eSet(E setElement) {
+        this.element = setElement;
     }
 
     @Override
@@ -71,14 +90,20 @@ public class DigitNode<E> {
         if (comparisonDigitNode == null) {
             return false;
         }
-        if(comparisonDigitNode.id == this.id &&
-        comparisonDigitNode.element == this.element &&
-        comparisonDigitNode.pro == this.pro &&
-        comparisonDigitNode.anti == this.anti
-        ) {
+        if (comparisonDigitNode.id == this.id && comparisonDigitNode.element == this.element
+                && comparisonDigitNode.pro == this.pro && comparisonDigitNode.anti == this.anti) {
             return true;
         } else {
             return false;
         }
+    }
+    
+    public void clear() {
+        this.vacant = true;
+    }
+
+    public void elementClear() {
+        this.vacant = true;
+        this.element = null;
     }
 }
