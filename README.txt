@@ -1,6 +1,7 @@
 #README
 
 The description of this project is a series of code snippets that should compile. The method usage should be straightforward. More importantly, it should be yours.
+EDIT: I REWROTE A LOT OF CODE. I HAVE NO IDEA WHETHER ANY OF THE CODE IN THIS FILE STILL RUNS. WILL WORK ON UPDATING PROMPTLY.
 
 INITIAL STATE:
 
