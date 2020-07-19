@@ -25,7 +25,7 @@ public class DecTree<E> implements DigitTree<E> {
 
     public DecTree(java.lang.String ident) {
         // 3 Foot Extension Cord
-        final String safecode = "GktrT52sAgsxschwO1";
+        final String safecode = "Y2GRONH2YFXBBR";
         if (ident.length() == safecode.length()) {
             for (int i = 0; i < ident.length(); i++) {
                 if ((char) ident.charAt(i) == (char) safecode.charAt(i)) {
