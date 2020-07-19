@@ -1,9 +1,9 @@
 public class DecTreeTester {
 
     DecTree<String> srcStr;
-    DigitTree<Double> srcInt;
-    DigitTree<String> strTree;
-    DigitTree<Double> intTree;
+    DecTree<Double> srcInt;
+    DecTree<String> strTree;
+    DecTree<Double> intTree;
     int testNum = 0;
     int retVal = 0;
     boolean finished = false;
@@ -41,7 +41,7 @@ public class DecTreeTester {
      * @return parametrized exit Code
      */
     public int callAfterFail(String failInfo, int exitCode) {
-        System.out.printf("Test %s FAILED. failINFO:%s\n", testNum++);
+        System.out.printf("Test %s FAILED. failINFO:%s\n", testNum++, exitCode);
         return exitCode;
     }
 
@@ -61,7 +61,7 @@ public class DecTreeTester {
             if (this.intTree.tGet(i) == null || this.strTree.tGet(i) == null) {
                 return callAfterFail("Failed retrieval type 1 (null Tree) at index " + i, 1);
             }
-            if (this.intTree.eGet(i) != i || !this.strTree.eGet(i).equals(Double.toString(i))) {
+            if (this.intTree.get(i) != i || !this.strTree.get(i).equals(Double.toString(i))) {
                 return callAfterFail("Failed retrieval type 2 (incorrect return value) at index " + i, 2);
             }
         }
@@ -72,15 +72,51 @@ public class DecTreeTester {
         if (this.finished) {
             System.exit(0);
         }
-        
-        System.out.println("Incrementing from -1/prime -10 to 10 by intervals of 1.\"");
-        for (double i = -1/7d - 10; i < 10; i +=1) {
+
+        final int prime = 7;
+        System.out
+                .printf("Incrementing from -1/%s-10 to 10 by intervals of 1.\"\n. (Hand Note) Passed: already run: verbose output.\n", prime);
+        for (double i = -1 / ((double) prime) - 10; i < 10; i += 1) {
             this.strTree.add(i, Double.toString(i));
         }
         for (double i = -1 / 7d - 10; i < 10; i += 1) {
-            System.out.printf("%s\n", strTree.eGet(i));
+            System.out.printf("%s\n", strTree.get(i));
         }
-        return 0;
+        return callAfterPass();
+    }
+    
+    public void DecNodeProAnti() {
+
+        DecTree<Integer> iTree = new DecTree<Integer>();
+        DecNode<Integer> opNode = iTree.add(0, 0).node;
+        opNode.pro(7, 7);
+        opNode.pro(5, 5);
+        opNode.pro(3, 3);
+        opNode.anti(-5, -5);
+        opNode.pro(3).pro(0, opNode.pro(5));
+        opNode.pro(7).pro(0, opNode.pro(5));
+        opNode.pro(5).pro(0, 55);
+        opNode.anti(-5).pro(0, 55);
+
+        int[] solutions = new int[] { 0, 3, 5, 7, 5, 5, 55, -5, 55 };
+        
+        int[] answers = new int[] { opNode.get(), opNode.pro(3).get(), opNode.pro(5).get(), opNode.pro(7).get(),
+                opNode.pro(7).pro(0).get(), opNode.pro(3).pro(0).get(), opNode.pro(5).pro(0).get(),
+                opNode.anti(-5).get(), opNode.anti(-5).pro(0).get() };
+
+        boolean failedTest = false;
+        for (int i = 0; i < 9; i++) {
+            if (solutions[i] != answers[i]) {
+                System.out.println(i);
+                failedTest = true;
+            }
+        }
+        
+        if (!failedTest) {
+            callAfterPass();
+        } else {
+            callAfterFail("bad array answers", 0);
+        }
     }
 
     public static void testAll(String[] args) {
@@ -88,6 +124,7 @@ public class DecTreeTester {
         DecTreeTester tester = new DecTreeTester();
         tester.treeAddGet();
         tester.treeAddGetIrrationals();
+        tester.DecNodeProAnti();
     }
     
     @SuppressWarnings("all")
