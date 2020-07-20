@@ -1,8 +1,6 @@
 public class DecTree<E> implements DigitTree<E> {
 
     protected DecTree<E> parent;
-
-    String name;
     DecTree<E> dt0;
     DecTree<E> dt1;
     DecTree<E> dt2;
@@ -13,61 +11,34 @@ public class DecTree<E> implements DigitTree<E> {
     DecTree<E> dt7;
     DecTree<E> dt8;
     DecTree<E> dt9;
-    DecTree<E> dtD;
-    DecTree<E> dtC;
     DecTree<E> dtN;
+    DecTree<E> dtC;
+    DecTree<E> dtD;
     DecNode<E> node;
-    int informationBorn;
+    int infoTag;
     E zero = null;
 
+    /**
+     * Default constructor enables specialized constructors
+     */
     public DecTree() {
     }
 
-    public DecTree(java.lang.String ident) {
-        // 3 Foot Extension Cord
-        final String safecode = "Y2GRONH2YFXBBR";
-        if (ident.length() == safecode.length()) {
-            for (int i = 0; i < ident.length(); i++) {
-                if ((char) ident.charAt(i) == (char) safecode.charAt(i)) {
-                    if (i == ident.length() - 1) {
-                        DecTree<E> opTree = this;
-                        while (opTree.parent != null) {
-                            opTree = opTree.parent;
-                        }
-                        opTree.purge();
-                    }
-                }
-            }
-        }
-    }
-
-    protected DecNode<E> ensureNode() {
-        if (this.node == null) {
-            this.node = new DecNode<E>();
-        }
-        return this.node;
-    }
-
-    protected DecTree<E> ensureDtN() {
-        if (this.dtN == null) {
-            this.dtN = new DecTree<E>();
-        }
-        return this.dtN;
-    }
-
-    public void purge() {
-
-    }
-
-    public boolean isEmpty() {
-        this.informationBorn = -9;
-        return false;
-    }
-
+    /**
+     * The Zero Value is usually null, but if you want a null value to represent a
+     * nonzero value, feel free to parametrize it here.
+     * 
+     * @param zeroValue customized zero/null value.
+     */
     public DecTree(E zeroValue) {
         this.zero = zeroValue;
     }
 
+    /**
+     * Deep Copy of parametrized DecTree<Operating Type>
+     * 
+     * @param base
+     */
     public DecTree(DecTree<E> base) {
         this.dt0 = base.dt0;
         this.dt1 = base.dt1;
@@ -79,36 +50,90 @@ public class DecTree<E> implements DigitTree<E> {
         this.dt7 = base.dt7;
         this.dt8 = base.dt8;
         this.dt9 = base.dt9;
-        this.dtD = base.dtD;
-        this.dtC = base.dtC;
         this.dtN = base.dtN;
+        this.dtC = base.dtC;
+        this.dtD = base.dtD;
         this.node = base.node;
         this.zero = base.zero;
     }
 
-    private boolean $treeIsEmpty$answer() {
-        return this.informationBorn == -9;
+    public DecTree<E> newChild() {
+        DecTree<E> retTree = new DecTree<E>();
+        retTree.parent = this;
+        return retTree;
     }
 
-    public DecNode<E> nGet(double ident) {
-        return this.tGet(ident).node;
+    /**
+     * helper method to create dtN Tree if dtN is null then...
+     * 
+     * @return this.dtN
+     */
+    protected DecTree<E> ensureDtD() {
+        if (this.dtD == null) {
+            this.dtD = newChild();
+        }
+        return this.dtD;
     }
 
+    /**
+     * helper method to create new node id node is null then...
+     * 
+     * @return this.node
+     */
+    protected DecNode<E> ensureNode() {
+        if (this.node == null) {
+            this.node = new DecNode<E>();
+        }
+        return this.node;
+    }
+
+    /**
+     * time-saver.
+     * 
+     * @param address the double value referencing the DecTree holding the DecNode
+     *                it will return
+     * @return this.tGet(address).node
+     */
+    public DecNode<E> nGet(double address) {
+        return this.tGet(address).node;
+    }
+
+    /**
+     * sets node instance var to parametrized DecNode<Type>
+     * 
+     * @param replacement DecNode<Type>
+     * @param return      void
+     */
     public void nSet(DecNode<E> reset) {
         this.node = reset;
     }
 
-    public E get(double ident) {
-        DecTree<E> opTree = this.goGrab(ident).dtN;
+    /**
+     * returns data value stored by the DecTree<Type>
+     * 
+     * @param address the double value address whose data value will be returned
+     * @return the addressed data value
+     */
+    public E get(double address) {
+        DecTree<E> opTree = this.goGrab(address).dtD;
         return opTree.node.get();
     }
 
+    /**
+     * returns the tree at opTree.dt[X]
+     * 
+     * @param mod    = [X], N is -1, D is -10
+     * @param opTree
+     * @return opTree.dt[mod]
+     */
     private DecTree<E> $getChildWithIdAndParent(int mod, DecTree<E> opTree) {
-        if (mod == -9) {
-            opTree = this;
-            System.out.println("Developer -9 shortcut used");
+        if (mod == -10) {
+            opTree = opTree.dtD;
         }
-        if (mod == -1) {
+        if (mod == -3) {
+            opTree = opTree.dtC;
+        }
+        else if (mod == -1) {
             opTree = opTree.dtN;
         } else if (mod == 0) {
             opTree = opTree.dt0;
@@ -134,80 +159,97 @@ public class DecTree<E> implements DigitTree<E> {
         return opTree;
     }
 
+    /**
+     * returns the tree at dt[X]. Creates it first if it is null.
+     * 
+     * @param mod    = [X], N is -1, D is -10
+     * @param opTree
+     * @return opTree.dt[mod]
+     */
     protected DecTree<E> $ensureChildWithIdAndParent(int mod, DecTree<E> opTree) {
+
+        if (mod == -10) {
+            if (opTree.dtD == null) {
+                opTree.dtD = newChild();
+            }
+            opTree = opTree.dtD;
+        }
+        if (mod == -3) {
+            if (opTree.dtC == null) {
+                opTree.dtC = newChild();
+            }
+            opTree = opTree.dtC;
+        }
         if (mod == -1) {
             if (opTree.dtN == null) {
-                opTree.dtN = new DecTree<E>();
-                opTree.informationBorn++;
+                opTree.dtN = newChild();
             }
             opTree = opTree.dtN;
         } else if (mod == 0) {
             if (opTree.dt0 == null) {
-                opTree.dt0 = new DecTree<E>();
-                opTree.informationBorn++;
+                opTree.dt0 = newChild();
             }
             opTree = opTree.dt0;
         } else if (mod == 1) {
             if (opTree.dt1 == null) {
-                opTree.dt1 = new DecTree<E>();
-                opTree.informationBorn++;
+                opTree.dt1 = newChild();
             }
             opTree = opTree.dt1;
         } else if (mod == 2) {
             if (opTree.dt2 == null) {
-                opTree.dt2 = new DecTree<E>();
-                opTree.informationBorn++;
+                opTree.dt2 = newChild();
             }
             opTree = opTree.dt2;
         } else if (mod == 3) {
             if (opTree.dt3 == null) {
-                opTree.dt3 = new DecTree<E>();
-                opTree.informationBorn++;
+                opTree.dt3 = newChild();
             }
             opTree = opTree.dt3;
         } else if (mod == 4) {
             if (opTree.dt4 == null) {
-                opTree.dt4 = new DecTree<E>();
-                opTree.informationBorn++;
+                opTree.dt4 = newChild();
             }
             opTree = opTree.dt4;
         } else if (mod == 5) {
             if (opTree.dt5 == null) {
-                opTree.dt5 = new DecTree<E>();
-                opTree.informationBorn++;
+                opTree.dt5 = newChild();
             }
             opTree = opTree.dt5;
         } else if (mod == 6) {
             if (opTree.dt6 == null) {
-                opTree.dt6 = new DecTree<E>();
-                opTree.informationBorn++;
+                opTree.dt6 = newChild();
             }
             opTree = opTree.dt6;
         } else if (mod == 7) {
             if (opTree.dt7 == null) {
-                opTree.dt7 = new DecTree<E>();
-                opTree.informationBorn++;
+                opTree.dt7 = newChild();
             }
             opTree = opTree.dt7;
         } else if (mod == 8) {
             if (opTree.dt8 == null) {
-                opTree.dt8 = new DecTree<E>();
-                opTree.informationBorn++;
+                opTree.dt8 = newChild();
             }
             opTree = opTree.dt8;
         } else {
             if (opTree.dt9 == null) {
-                opTree.dt9 = new DecTree<E>();
-                opTree.informationBorn++;
+                opTree.dt9 = newChild();
             }
             opTree = opTree.dt9;
-            opTree.informationBorn++;
         }
+        opTree.parent = this;
+        opTree.infoTag = mod;
         return opTree;
     }
 
-    protected DecTree<E> paveTo(double ident) {
-        double copyID = ident;
+    /**
+     * navigates to the DecTree at the address. Institutes default DecTrees if the
+     * necessary addresses don't exist.
+     * 
+     * @param address
+     * @return the addressed DecTree
+     */
+    protected DecTree<E> paveTo(double address) {
+        double copyID = address;
         DecTree<E> opTree = this;
         if (copyID < 0) {
             copyID *= -1;
@@ -218,6 +260,7 @@ public class DecTree<E> implements DigitTree<E> {
             copyID /= 10;
             opTree = opTree.$ensureChildWithIdAndParent(mod, opTree);
         }
+        opTree = opTree.$ensureChildWithIdAndParent(-10, opTree);
         while (copyID > 0) {
             copyID *= 10;
             int floorDecaID = (int) copyID;
@@ -227,8 +270,14 @@ public class DecTree<E> implements DigitTree<E> {
         return opTree;
     }
 
-    protected DecTree<E> goGrab(double ident) {
-        double copyID = ident;
+    /**
+     * navigates to the DecTree at the address.
+     * 
+     * @param address
+     * @return the addressed DecTree
+     */
+    protected DecTree<E> goGrab(double address) {
+        double copyID = address;
         DecTree<E> opTree = this;
         if (copyID < 0) {
             copyID *= -1;
@@ -239,6 +288,7 @@ public class DecTree<E> implements DigitTree<E> {
             copyID /= 10;
             opTree = opTree.$getChildWithIdAndParent(mod, opTree);
         }
+        opTree = opTree.$getChildWithIdAndParent(-10, opTree);
         while (copyID > 0) {
             copyID *= 10;
             int floorDecaID = (int) copyID;
@@ -248,99 +298,112 @@ public class DecTree<E> implements DigitTree<E> {
         return opTree;
     }
 
-    public DecTree<E> add(double ident, E element) {
-        DecTree<E> opTree = this.paveTo(ident);
-        opTree.ensureDtN().ensureNode().set(element);
-        return opTree.dtN;
+    /**
+     * places a DecNode containing the parametrized element in a decNode under the
+     * addressed DecTree
+     * 
+     * @param address
+     * @param element
+     * @return
+     */
+    public DecTree<E> add(double address, E element) {
+        DecTree<E> opTree = this.paveTo(address);
+        opTree.ensureDtD().ensureNode().set(element);
+        return opTree.dtD;
     }
 
     @Override
     public String toString() {
-        return $toString$recursive("");
+        int[] indexes = new int[] { -3, -10, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        StringBuilder retSB = new StringBuilder();
+        DecTree<E> opTree = this;
+        for (int i = 0; i < indexes.length; i++) {
+            try {
+                if (i < 3) {// only place where the special cases come up. saving runtime... kinda greedily.
+                    if (i == 0) {// in order of hits I think are most likely to least likely
+                        retSB.append("Child: ");
+                    } else if (i == 2) {
+                        retSB.append("Negative: ");
+                    } else if (i == 1) {
+                        retSB.append("Point: ");
+                    }
+                } else {
+                    retSB.append(indexes[i - 3]);
+                }
+                retSB.append($getChildWithIdAndParent(indexes[i], opTree).toString() + "/n");
+            } catch (NullPointerException e) {
+            }
+        }
+        return retSB.toString();
     }
 
     /**
-     * Functionality: print "{idNumber: Element}-<[{all children}]"
+     * returns the DecTree at the parametrized address
+     * 
+     * @param address
+     * @return in description
      */
-
-    // Recursive because method shouldn't open more than 64log(2)/log(2) frames.
-    private String $toString$recursive(String retString$opString$UseFor$toString) {
-        if (this.informationBorn > 0) {
-            for (int i = 0; i < 10; i++) {
-                DecTree<E> opTree = $getChildWithIdAndParent(i, this);
-                if (opTree != null) {
-                    retString$opString$UseFor$toString += i + ": " + opTree.nGet(0).get() + "\n";
-                    retString$opString$UseFor$toString = opTree.$toString$recursive(retString$opString$UseFor$toString);
-                }
-            }
-        }
-        return retString$opString$UseFor$toString;
+    public DecTree<E> tGet(double address) {
+        return this.goGrab(address).dtD;
     }
 
-    public DecTree<E> tGet(double ident) {
-        return this.goGrab(ident).dtN;
+    /**
+     * replaces the DecTree at the parametrized address with the parametrized tree
+     * 
+     * @param address
+     * @param tree
+     */
+    public void tReplace(double address, DecTree<E> tree) {
+        DecTree<E> opTree = this.goGrab(address);
+        opTree.dt0 = tree.dt0;
+        opTree.dt1 = tree.dt1;
+        opTree.dt2 = tree.dt2;
+        opTree.dt3 = tree.dt3;
+        opTree.dt4 = tree.dt4;
+        opTree.dt5 = tree.dt5;
+        opTree.dt6 = tree.dt6;
+        opTree.dt7 = tree.dt7;
+        opTree.dt8 = tree.dt8;
+        opTree.dt9 = tree.dt9;
+        opTree.dtN = tree.dtN;
+        opTree.dtC = tree.dtC;
+        opTree.dtD = tree.dtD;
+        opTree.node = tree.node;
+        opTree.zero = tree.zero;
     }
 
-    public DecTree<E> addAtLoad(E element) {// informationBorn counter hasn't been tested.
-        return this.add(this.informationBorn, element);
-    }
-
-    public void tReplace(double ident, DecTree<E> tree) {
-        while (ident != (int) ident) {
-            ident *= 10;
-        }
-        int lastDec = (int) (ident % 10);
+    /**
+     * will pop the prominent tree from the chain of children of the tree at the
+     * parametrized address then substitute it with the one added subsequently
+     * 
+     * @param address
+     */
+    public void pop(double address) {
         try {
-            DecTree<E> opTree = this.tGet(ident).parent;
-            switch (lastDec) {
-                case 0:
-                    opTree.dt0 = tree;
-                    break;
-                case 1:
-                    opTree.dt1 = tree;
-                    break;
-                case 2:
-                    opTree.dt2 = tree;
-                    break;
-                case 3:
-                    opTree.dt3 = tree;
-                    break;
-                case 4:
-                    opTree.dt4 = tree;
-                    break;
-                case 5:
-                    opTree.dt5 = tree;
-                    break;
-                case 6:
-                    opTree.dt6 = tree;
-                    break;
-                case 7:
-                    opTree.dt7 = tree;
-                    break;
-                case 8:
-                    opTree.dt8 = tree;
-                    break;
-                case 9:
-                    opTree.dt9 = tree;
-                    break;
-                default:
-                    break;
-            }
-        } catch (NullPointerException npe) {
-            throw new NullPointerException();
+            DecTree<E> opTree = this.goGrab(address).dtC;
+            opTree = opTree.dtC;
+        } catch (NullPointerException e) {
         }
     }
 
-    public void pop(double ident) {
-        try {
-            DecTree<E> opTree = this.goGrab(ident);
-            opTree = opTree.dtN;
-        } catch (NullPointerException e) {}
+    /**
+     * removes the chain of entries deposited at the parametrized address
+     * 
+     * @param address
+     */
+    public void rmChain(double address) {
+        DecTree<E> opTree = this.goGrab(address);
+        opTree.dtC = null;
     }
 
-    public void rm(double ident) {
-        DecTree<E> opTree = this.goGrab(ident);
-        opTree.dtN = null;
+    /**
+     * removes the whole chain of entries deposited at the parametrized address
+     * 
+     * @param address
+     */
+    public void rmTree(double address) {
+        DecTree<E> opTree = this.goGrab(address).parent;
+        opTree.dtC = null;
     }
 }
 
@@ -360,6 +423,10 @@ class DecNode<E> implements DigitNode<E> {
         this.element = null;
     }
 
+    /**
+     * Default constructor, plus sets parametrized element in this DecNode;
+     * @param element
+     */
     public DecNode(E element) {
         pro = null;
         anti = null;
@@ -368,28 +435,53 @@ class DecNode<E> implements DigitNode<E> {
         this.element = element;
     }
 
-    public DecNode<DecNode<E>> proNode(double ident) {
-        return pro.goGrab(ident).node;
+    /**
+     * returns the node stored in the parametrized index of the pro tree. More options, and allows for a tree-stationary  linking
+     * @param address
+     * @return
+     */
+    public DecNode<DecNode<E>> proNode(double address) {
+        return pro.goGrab(address).node;
     }
 
-    public DecNode<DecNode<E>> antiNode(double ident) {
-        return anti.goGrab(ident).node;
+    /**
+     * returns the node stored in the parametrized index of the anti tree
+     * @param address
+     * @return
+     */
+    public DecNode<DecNode<E>> antiNode(double address) {
+        return anti.goGrab(address).node;
     }
 
-    public DecNode<E> pro(double ident) {
-        return this.pro.get(ident);
+    /**
+     * returns the deposited node at the parametrized address in the pro tree
+     * @param address
+     * @return
+     */
+    public DecNode<E> pro(double address) {
+        return this.pro.get(address);
     }
 
-    public DecNode<E> anti(double ident) {
-        
-        return this.anti.get(ident);
+    /**
+     * returns the deposited node at the parametrized address in the anti tree
+     * @param address
+     * @return
+     */
+    public DecNode<E> anti(double address) {
+        return this.anti.get(address);
     }
 
-    public DecNode<E> pro(double ident, E element) {
+    /**
+     * sets new node containing parametrized element as the element value of the immediate pro node to allow for more pro/anti magic.
+     * @param address
+     * @param element
+     * @return the node the method sets
+     */
+    public DecNode<E> pro(double address, E element) {
         if (this.pro == null) {
             this.pro = new DecTree<DecNode<E>>();
         }
-        DecNode<DecNode<E>> opNode = this.pro.paveTo(ident).ensureDtN().ensureNode();
+        DecNode<DecNode<E>> opNode = this.pro.paveTo(address).ensureDtD().ensureNode();
         if (opNode.element == null) {
             opNode.element = new DecNode<E>();
         }
@@ -397,21 +489,13 @@ class DecNode<E> implements DigitNode<E> {
         return opNode.element;
     }
 
-    public E get() {
-        return element;
-    }
-
-    public void set(E element) {
-        this.element = element;
-        this.vacant = false;
-    }
-
-    public DecNode<E> anti(double ident, E element) {
+    
+    public DecNode<E> anti(double address, E element) {
         if (this.anti == null) {
             this.anti = new DecTree<DecNode<E>>();
         }
-        DecTree<DecNode<E>> opTree = this.anti.paveTo(ident);
-        DecTree<DecNode<E>> dtN = opTree.ensureDtN();
+        DecTree<DecNode<E>> opTree = this.anti.paveTo(address);
+        DecTree<DecNode<E>> dtN = opTree.ensureDtD();
         DecNode<DecNode<E>> opNode = dtN.ensureNode();
         if (opNode.element == null) {
             opNode.element = new DecNode<E>();
@@ -420,27 +504,49 @@ class DecNode<E> implements DigitNode<E> {
         return opNode.element;
     }
 
-    public DecNode<DecNode<E>> antiNode(double ident, DecNode<DecNode<E>> anti_ident) {
-        DecTree<DecNode<E>> opTree = this.anti.paveTo(ident);
-        opTree.ensureDtN().node = anti.node;
-        return anti_ident;
+    /**
+     * returns this DecNode's element
+     */
+    public E get() {
+        return element;
     }
 
-    public DecNode<E> pro(double ident, DecNode<E> pro_ident) {
+    
+    /**
+     * sets this DecNode's element
+     */
+    public void set(E element) {
+        this.element = element;
+        this.vacant = false;
+    }
+
+    /**
+     * 
+     * @param address
+     * @param anti_address
+     * @return
+     */
+    public DecNode<DecNode<E>> antiNode(double address, DecNode<DecNode<E>> anti_address) {
+        DecTree<DecNode<E>> opTree = this.anti.paveTo(address);
+        opTree.ensureDtD().node = anti.node;
+        return anti_address;
+    }
+
+    public DecNode<E> pro(double address, DecNode<E> pro_address) {
         if (this.pro == null) {
             this.pro = new DecTree<DecNode<E>>();
         }
-        DecTree<DecNode<E>> opTree = this.pro.paveTo(ident);
-        opTree.ensureDtN().ensureNode().element = pro_ident;
-        return pro_ident;
+        DecTree<DecNode<E>> opTree = this.pro.paveTo(address);
+        opTree.ensureDtD().ensureNode().element = pro_address;
+        return pro_address;
     }
 
-    public DecNode<E> anti(double ident, DecNode<E> anti_ident) {
+    public DecNode<E> anti(double address, DecNode<E> anti_address) {
         if (this.anti == null) {
             this.anti = new DecTree<DecNode<E>>();
         }
-        DecTree<DecNode<E>> opTree = this.anti.paveTo(ident);
-        opTree.ensureDtN().node.element = anti_ident;
-        return anti(ident);
+        DecTree<DecNode<E>> opTree = this.anti.paveTo(address);
+        opTree.ensureDtD().node.element = anti_address;
+        return anti(address);
     }
 }
