@@ -1,4 +1,4 @@
-#DecTree
+# DecTree
 
 The DecTree is the first generation multi-indexing, mutable (revisit phrasing) data structure.
 
@@ -60,7 +60,7 @@ Goal: insert a 4 between the 3 and 5.
 
     demo.add(3, 4);
 
-    ****you will havee to independently implement the mechanism to retrieve this. 
+    ****you will have to independently implement the mechanism to retrieve this. 
 
 
 
