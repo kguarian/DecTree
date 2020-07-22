@@ -99,7 +99,7 @@ public class DecTreeTester {
         opNode.anti(-5).pro(0, 55);
 
         int[] solutions = new int[] { 0, 3, 5, 7, 5, 5, 55, -5, 55 };
-        
+
         int[] answers = new int[] { opNode.get(), opNode.pro(3).get(), opNode.pro(5).get(), opNode.pro(7).get(),
                 opNode.pro(7).pro(0).get(), opNode.pro(3).pro(0).get(), opNode.pro(5).pro(0).get(),
                 opNode.anti(-5).get(), opNode.anti(-5).pro(0).get() };
@@ -111,12 +111,27 @@ public class DecTreeTester {
                 failedTest = true;
             }
         }
-        
+
         if (!failedTest) {
             callAfterPass();
         } else {
             callAfterFail("bad array answers", 0);
         }
+    }
+    
+    public void tsToString1() {
+        DecTree<Integer> tree = new DecTree<Integer>();
+        DecTree<Integer> tree2 = tree.add(7538.8357, null);
+        DecNode<Integer> opNode = tree2.node;
+        opNode.pro(7, 7);
+        opNode.pro(5, 5);
+        opNode.pro(3, 3);
+        opNode.anti(-5, -5);
+        opNode.pro(3).pro(0, opNode.pro(5));
+        opNode.pro(7).pro(0, opNode.pro(5));
+        opNode.pro(5).pro(0, 55);
+        opNode.anti(-5).pro(0, 55);
+        System.out.println(tree);
     }
 
     public static void testAll(String[] args) {
@@ -125,6 +140,7 @@ public class DecTreeTester {
         tester.treeAddGet();
         tester.treeAddGetIrrationals();
         tester.DecNodeProAnti();
+        tester.tsToString1();
     }
     
     @SuppressWarnings("all")
