@@ -1,22 +1,23 @@
-public class DecTree<E> {
+class DecTree<D> {
 
-    protected DecTree<E> parent;
-    DecTree<E> dt0;
-    DecTree<E> dt1;
-    DecTree<E> dt2;
-    DecTree<E> dt3;
-    DecTree<E> dt4;
-    DecTree<E> dt5;
-    DecTree<E> dt6;
-    DecTree<E> dt7;
-    DecTree<E> dt8;
-    DecTree<E> dt9;
-    DecTree<E> dtN;
-    DecTree<E> dtC;
-    DecTree<E> dtD;
-    protected DecNode<E> node;
+    protected DecTree<D> parent;
+    D dev0;
+    DecTree<D> dt0;
+    DecTree<D> dt1;
+    DecTree<D> dt2;
+    DecTree<D> dt3;
+    DecTree<D> dt4;
+    DecTree<D> dt5;
+    DecTree<D> dt6;
+    DecTree<D> dt7;
+    DecTree<D> dt8;
+    DecTree<D> dt9;
+    DecTree<D> dtN;
+    DecTree<D> dtC;
+    DecTree<D> dtD;
+    DecTree<D> dev1;
+    DecTree<DecTree<D>> dev2;
     double address;
-    E zero = null;
     int type;
 
     /**
@@ -31,12 +32,20 @@ public class DecTree<E> {
      * 
      * @param zeroValue customized zero/null value.
      */
-    public DecTree(E zeroValue) {
-        this.zero = zeroValue;
+    public DecTree(D element) {
+        this.dev0 = element;
     }
 
     public DecTree(int type) {
         this.type = type;
+    }
+
+    public void element(D element) {
+        this.dev0 = element;
+    }
+
+    public D element() {
+        return this.dev0;
     }
 
     /**
@@ -44,7 +53,7 @@ public class DecTree<E> {
      * 
      * @param base
      */
-    public DecTree(DecTree<E> base) {
+    public DecTree(DecTree<D> base) {
         this.dt0 = base.dt0;
         this.dt1 = base.dt1;
         this.dt2 = base.dt2;
@@ -58,8 +67,9 @@ public class DecTree<E> {
         this.dtN = base.dtN;
         this.dtC = base.dtC;
         this.dtD = base.dtD;
-        this.node = base.node;
-        this.zero = base.zero;
+        this.dev2 = base.dev2;
+        this.dev1 = base.dev1;
+        this.dev0 = base.dev0;
     }
 
     /**
@@ -67,23 +77,17 @@ public class DecTree<E> {
      * 
      * @return this.dtC
      */
-    protected DecTree<E> ensureDtC() {
+    protected DecTree<D> ensureDtC() {
         if (this.dtC == null) {
-            this.dtC = new DecTree<E>(-10);
+            this.dtC = new DecTree<D>(-3);
+            this.dtC.parent = this;
         }
         return this.dtC;
     }
 
-    /**
-     * helper method to create new node id node is null then...
-     * 
-     * @return this.node
-     */
-    protected DecNode<E> ensureNode() {
-        if (this.node == null) {
-            this.node = new DecNode<E>();
-        }
-        return this.node;
+    protected DecTree<DecTree<D>> ensureDtP() {
+        this.dev2 = this.dev2 != null ? this.dev2 : new DecTree<DecTree<D>>();
+        return this.dev2;
     }
 
     /**
@@ -93,29 +97,16 @@ public class DecTree<E> {
      *                it will return
      * @return this.tGet(address).node
      */
-    public DecNode<E> nGet(double address) {
-        return this.tGet(address).node;
+    public D get(double address) {
+        return this.tGet(address).get();
     }
 
-    /**
-     * sets node instance var to parametrized DecNode<Type>
-     * 
-     * @param replacement DecNode<Type>
-     * @param return      void
-     */
-    public void nSet(DecNode<E> reset) {
-        this.node = reset;
+    public D get() {
+        return this.dev0;
     }
 
-    /**
-     * returns data value stored by the DecTree<Type>
-     * 
-     * @param address the double value address whose data value will be returned
-     * @return the addressed data value
-     */
-    public E get(double address) {
-        DecTree<E> opTree = this.goGrab(address).dtC;
-        return opTree.node.get();
+    public void set(D element) {
+        this.dev0 = element;
     }
 
     /**
@@ -125,7 +116,7 @@ public class DecTree<E> {
      * @param opTree
      * @return opTree.dt[mod]
      */
-    private DecTree<E> $getChildWithIdAndParent(int mod, DecTree<E> opTree) {
+    private DecTree<D> $getChildWithIdAndParent(int mod, DecTree<D> opTree) {
         if (mod == -10) {
             opTree = opTree.dtD;
         }
@@ -164,73 +155,73 @@ public class DecTree<E> {
      * @param opTree
      * @return opTree.dt[mod]
      */
-    protected DecTree<E> $ensureChildWithIdAndParent(int mod, DecTree<E> opTree) {
+    protected DecTree<D> $ensureChildWithIdAndParent(int mod, DecTree<D> opTree) {
 
         if (mod == -10) {
             if (opTree.dtD == null) {
-                opTree.dtD = new DecTree<E>(mod);
+                opTree.dtD = new DecTree<D>(mod);
             }
             opTree = opTree.dtD;
         }
         if (mod == -3) {
             if (opTree.dtC == null) {
-                opTree.dtC = new DecTree<E>(mod);
+                opTree.dtC = new DecTree<D>(mod);
             }
             opTree = opTree.dtC;
         }
         if (mod == -1) {
             if (opTree.dtN == null) {
-                opTree.dtN = new DecTree<E>(mod);
+                opTree.dtN = new DecTree<D>(mod);
             }
             opTree = opTree.dtN;
         } else if (mod == 0) {
             if (opTree.dt0 == null) {
-                opTree.dt0 = new DecTree<E>(mod);
+                opTree.dt0 = new DecTree<D>(mod);
             }
             opTree = opTree.dt0;
         } else if (mod == 1) {
             if (opTree.dt1 == null) {
-                opTree.dt1 = new DecTree<E>(mod);
+                opTree.dt1 = new DecTree<D>(mod);
             }
             opTree = opTree.dt1;
         } else if (mod == 2) {
             if (opTree.dt2 == null) {
-                opTree.dt2 = new DecTree<E>(mod);
+                opTree.dt2 = new DecTree<D>(mod);
             }
             opTree = opTree.dt2;
         } else if (mod == 3) {
             if (opTree.dt3 == null) {
-                opTree.dt3 = new DecTree<E>(mod);
+                opTree.dt3 = new DecTree<D>(mod);
             }
             opTree = opTree.dt3;
         } else if (mod == 4) {
             if (opTree.dt4 == null) {
-                opTree.dt4 = new DecTree<E>(mod);
+                opTree.dt4 = new DecTree<D>(mod);
             }
             opTree = opTree.dt4;
         } else if (mod == 5) {
             if (opTree.dt5 == null) {
-                opTree.dt5 = new DecTree<E>(mod);
+                opTree.dt5 = new DecTree<D>(mod);
             }
             opTree = opTree.dt5;
         } else if (mod == 6) {
             if (opTree.dt6 == null) {
-                opTree.dt6 = new DecTree<E>(mod);
+                opTree.dt6 = new DecTree<D>(mod);
             }
             opTree = opTree.dt6;
         } else if (mod == 7) {
             if (opTree.dt7 == null) {
-                opTree.dt7 = new DecTree<E>(mod);
+                opTree.dt7 = new DecTree<D>(mod);
             }
             opTree = opTree.dt7;
         } else if (mod == 8) {
             if (opTree.dt8 == null) {
-                opTree.dt8 = new DecTree<E>(mod);
+                opTree.dt8 = new DecTree<D>(mod);
             }
             opTree = opTree.dt8;
         } else {
             if (opTree.dt9 == null) {
-                opTree.dt9 = new DecTree<E>(mod);
+                opTree.dt9 = new DecTree<D>(mod);
             }
             opTree = opTree.dt9;
         }
@@ -246,9 +237,9 @@ public class DecTree<E> {
      * @param address
      * @return the addressed DecTree
      */
-    protected DecTree<E> paveTo(double address) {
+    protected DecTree<D> paveTo(double address) {
         double copyID = address;
-        DecTree<E> opTree = this;
+        DecTree<D> opTree = this;
         if (copyID < 0) {
             copyID *= -1;
             opTree = $ensureChildWithIdAndParent(-1, opTree);
@@ -274,9 +265,9 @@ public class DecTree<E> {
      * @param address
      * @return the addressed DecTree
      */
-    protected DecTree<E> goGrab(double address) {
+    protected DecTree<D> goGrab(double address) {
         double copyID = address;
-        DecTree<E> opTree = this;
+        DecTree<D> opTree = this;
         if (copyID < 0) {
             copyID *= -1;
             opTree = $getChildWithIdAndParent(-1, opTree);
@@ -304,32 +295,84 @@ public class DecTree<E> {
      * @param element
      * @return
      */
-    public DecTree<E> add(double address, E element) {
-        DecTree<E> opTree = this.paveTo(address);
-        opTree.ensureDtC().ensureNode().set(element);
+    public DecTree<D> add(double address, D element) {
+        DecTree<D> opTree = this.paveTo(address);
+        while (opTree.dtC != null) {
+            opTree = opTree.ensureDtC();
+        }
+        opTree.ensureDtC().dev0 = element;
         return opTree.dtC;
     }
 
     @Override
     public String toString() {
-        int[] mods = new int[] { -1, -3, -10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-        StringBuilder retSB = new StringBuilder();
-        DecTree<E> opTree = this;
-        if(this.node!=null){
-            retSB.append("{t"+type+": " + this.node+" || ");
-        }
-        for (int i = 0; i < mods.length; i++) {
-            try {
-                String apString = $getChildWithIdAndParent(mods[i], opTree).toString();
-                //apString <-> appended String
-                retSB.append(apString);
-            } catch (NullPointerException e) {
+        String retString = this.dev0 != null ?this.type + ": "+this.dev0+ " " : "";
+
+        //  CODE BLOCK
+        {
+            DecTree<D> opTree = this.dt0;
+            if (opTree != null) {
+                retString += opTree.toString();
+            }
+            opTree = this.dt1;
+            if (opTree != null) {
+                retString += opTree.toString();
+            }
+            opTree = this.dt2;
+            if (opTree != null) {
+                retString += opTree.toString();
+            }
+            opTree = this.dt3;
+            if (opTree != null) {
+                retString += opTree.toString();
+            }
+            opTree = this.dt4;
+            if (opTree != null) {
+                retString += opTree.toString();
+            }
+            opTree = this.dt5;
+            if (opTree != null) {
+                retString += opTree.toString();
+            }
+            opTree = this.dt6;
+            if (opTree != null) {
+                retString += opTree.toString();
+            }
+            opTree = this.dt7;
+            if (opTree != null) {
+                retString += opTree.toString();
+            }
+            opTree = this.dt8;
+            if (opTree != null) {
+                retString += opTree.toString();
+            }
+            opTree = this.dt9;
+            if (opTree != null) {
+                retString += opTree.toString();
+            }
+            opTree = this.dtN;
+            if (opTree != null) {
+                retString += opTree.toString();
+            }
+            opTree = this.dtC;
+            if (opTree != null) {
+                retString += opTree.toString();
+            }
+            opTree = this.dtD;
+            if (opTree != null) {
+                retString += opTree.toString();
+            }
+            opTree = this.dev1;
+            if (opTree != null) {
+                retString += opTree.toString();
+            }
+            if (this.dev2 != null) {
+                retString += this.dev2.toString();
             }
         }
-        if (this.node != null) {
-            retSB.append("} ");
-        }
-        return retSB.toString();
+        //END CODE BLOCK
+
+        return retString;
     }
 
     /**
@@ -338,8 +381,12 @@ public class DecTree<E> {
      * @param address
      * @return in description
      */
-    public DecTree<E> tGet(double address) {
+    public DecTree<D> tGet(double address) {
         return this.goGrab(address).dtC;
+    }
+
+    public D pGet() {
+        return this.dev2.dev0.get();
     }
 
     /**
@@ -348,8 +395,8 @@ public class DecTree<E> {
      * @param address
      * @param tree
      */
-    public void tReplace(double address, DecTree<E> tree) {
-        DecTree<E> opTree = this.goGrab(address);
+    public void tReplace(double address, DecTree<D> tree) {
+        DecTree<D> opTree = this.goGrab(address);
         opTree.dt0 = tree.dt0;
         opTree.dt1 = tree.dt1;
         opTree.dt2 = tree.dt2;
@@ -363,8 +410,26 @@ public class DecTree<E> {
         opTree.dtN = tree.dtN;
         opTree.dtC = tree.dtC;
         opTree.dtD = tree.dtD;
-        opTree.node = tree.node;
-        opTree.zero = tree.zero;
+        opTree.dev2 = tree.dev2;
+        opTree.dev0 = tree.dev0;
+    }
+
+    public void tReplace(DecTree<D> tree) {
+        this.dt0 = tree.dt0;
+        this.dt1 = tree.dt1;
+        this.dt2 = tree.dt2;
+        this.dt3 = tree.dt3;
+        this.dt4 = tree.dt4;
+        this.dt5 = tree.dt5;
+        this.dt6 = tree.dt6;
+        this.dt7 = tree.dt7;
+        this.dt8 = tree.dt8;
+        this.dt9 = tree.dt9;
+        this.dtN = tree.dtN;
+        this.dtC = tree.dtC;
+        this.dtD = tree.dtD;
+        this.dev2 = tree.dev2;
+        this.dev0 = tree.dev0;
     }
 
     /**
@@ -373,11 +438,19 @@ public class DecTree<E> {
      * 
      * @param address
      */
-    public void pop(double address) {
-        try {
-            DecTree<E> opTree = this.goGrab(address).dtC;
-            opTree = opTree.dtC;
-        } catch (NullPointerException e) {
+    public void rm(double address) {
+        DecTree<D> opTree = this.tGet(address);
+        if (opTree.dtC == null) {
+            opTree.dev0 = null;
+            return;
+        } else {
+            DecTree<D> dtC = opTree.dtC;
+            while (dtC != null) {
+                opTree.dev0 = dtC.dev0;
+                opTree = dtC;
+                dtC = dtC.dtC;
+            }
+            opTree.dtC = null;
         }
     }
 
@@ -387,7 +460,7 @@ public class DecTree<E> {
      * @param address
      */
     public void rmChain(double address) {
-        DecTree<E> opTree = this.goGrab(address);
+        DecTree<D> opTree = this.goGrab(address);
         opTree.dtC = null;
     }
 
@@ -397,196 +470,51 @@ public class DecTree<E> {
      * @param address
      */
     public void rmTree(double address) {
-        DecTree<E> opTree = this.goGrab(address).parent;
-        opTree.dtC = null;
+        DecTree<D> opTree = this.goGrab(address).parent;
+        byte firstDigit = (byte) (address / Math.pow(10, Math.log10(address)) + 0.001);
+
+        // gets first digit of address, should account for floating point errors too
+        // (constant).
+        // also byte's smaller than double XD
+        opTree = $getChildWithIdAndParent(firstDigit, opTree);
+        opTree = new DecTree<D>(firstDigit);
     }
 
-    public DecNode<E> pro(double address) {
-        return this.node.pro(address);
+    public DecTree<D> dev1(double address) {
+        return this.dev2.get(address);
     }
 
-    public DecNode<E> pro(double address, E element) {
-        return this.node.pro(address, element);
+    protected DecTree<DecTree<D>> dev2(){return this.dev2;}
+    //TODO: REMOVE dev2() BEFORE FINAL!!!
+
+    public DecTree<D> dev1(double address, D element) {
+        this.dev2 = this.dev2 != null ? this.dev2 : new DecTree<DecTree<D>>();
+        return this.dev2.add(address, new DecTree<D>(element)).get();
     }
 
-    public DecNode<E> anti(double address) {
-        return this.node.anti(address);
-    }
-    public DecNode<E> anti(double address, E element) {
-        return this.node.anti(address, element);
-    }
-}
-
-class DecNode<E> implements DigitNode<E> {
-
-    DecTree<DecNode<E>> pro;
-    DecTree<DecNode<E>> anti;
-    boolean vacant;
-    DecTree<E> id; // TODO: Do I want id parametrized?? Hackability? Could be a fun tool.
-    E element;
-
-    public DecNode() {
-        pro = null;
-        anti = null;
-        vacant = true;
-        id = null;
-        this.element = null;
+    public DecTree<DecTree<D>> dev2(double address, DecTree<D> tree) {
+        DecTree<DecTree<D>> opTree = this.ensureDtP().paveTo(address).ensureDtC();
+        opTree.element(tree);
+        return opTree;
     }
 
-    /**
-     * Default constructor, plus sets parametrized element in this DecNode;
-     * 
-     * @param element
-     */
-    public DecNode(E element) {
-        pro = null;
-        anti = null;
-        vacant = true;
-        id = null;
-        this.element = element;
+    public void tie(DecTree<D> otherTree) {
+        otherTree.dev1 = this;
+        this.dev1 = otherTree;
     }
 
-    public DecNode(E[] EArray) {
-        if (EArray.length > 0) {
-            this.element = EArray[1];
-            DecNode<E> opTree = this.pro(0);
-            for (int i = 1; i < EArray.length; i++) {
-                opTree.pro(0, EArray[i]);
+    public double getAddress() {
+        String addressString = "";
+        DecTree<D> opTree = this;
+        while (opTree.parent != null) {
+            opTree = opTree.parent;
+            if (opTree.address == -3) {
+                return Double.parseDouble(addressString);
             }
+            addressString = opTree.address >= 0 ? Long.toString((long) opTree.address)
+                    : opTree.address == -1 ? "-" : "." + addressString;
+            System.out.println(addressString);
         }
-    }
-
-    /**
-     * returns the node stored in the parametrized index of the pro tree. More
-     * options, and allows for a tree-stationary linking
-     * 
-     * @param address
-     * @return
-     */
-    public DecNode<DecNode<E>> proNode(double address) {
-        return pro.goGrab(address).node;
-    }
-
-    /**
-     * returns the node stored in the parametrized index of the anti tree
-     * 
-     * @param address
-     * @return
-     */
-    public DecNode<DecNode<E>> antiNode(double address) {
-        return anti.goGrab(address).node;
-    }
-
-    /**
-     * returns the deposited node at the parametrized address in the pro tree
-     * 
-     * @param address
-     * @return
-     */
-    public DecNode<E> pro(double address) {
-        return this.pro.get(address);
-    }
-
-    /**
-     * returns the deposited node at the parametrized address in the anti tree
-     * 
-     * @param address
-     * @return
-     */
-    public DecNode<E> anti(double address) {
-        return this.anti.get(address);
-    }
-
-    /**
-     * sets new node containing parametrized element as the element value of the
-     * immediate pro node to allow for more pro/anti magic.
-     * 
-     * @param address
-     * @param element
-     * @return the node the method sets
-     */
-    public DecNode<E> pro(double address, E element) {
-        if (this.pro == null) {
-            this.pro = new DecTree<DecNode<E>>();
-        }
-        DecNode<DecNode<E>> opNode = this.pro.paveTo(address).ensureDtC().ensureNode();
-        if (opNode.element == null) {
-            opNode.element = new DecNode<E>();
-        }
-        opNode.element.element = element;
-        return opNode.element;
-    }
-
-    public DecNode<E> anti(double address, E element) {
-        if (this.anti == null) {
-            this.anti = new DecTree<DecNode<E>>();
-        }
-        DecTree<DecNode<E>> opTree = this.anti.paveTo(address);
-        DecTree<DecNode<E>> dtN = opTree.ensureDtC();
-        DecNode<DecNode<E>> opNode = dtN.ensureNode();
-        if (opNode.element == null) {
-            opNode.element = new DecNode<E>();
-        }
-        opNode.element.element = element;
-        return opNode.element;
-    }
-
-    /**
-     * returns this DecNode's element
-     */
-    public E get() {
-        return element;
-    }
-
-    /**
-     * sets this DecNode's element
-     */
-    public void set(E element) {
-        this.element = element;
-        this.vacant = false;
-    }
-
-    /**
-     * 
-     * @param address
-     * @param anti_address
-     * @return
-     */
-    public DecNode<DecNode<E>> antiNode(double address, DecNode<DecNode<E>> anti_address) {
-        DecTree<DecNode<E>> opTree = this.anti.paveTo(address);
-        opTree.ensureDtC().node = anti.node;
-        return anti_address;
-    }
-
-    public DecNode<E> pro(double address, DecNode<E> pro_address) {
-        if (this.pro == null) {
-            this.pro = new DecTree<DecNode<E>>();
-        }
-        DecTree<DecNode<E>> opTree = this.pro.paveTo(address);
-        opTree.ensureDtC().ensureNode().element = pro_address;
-        return pro_address;
-    }
-
-    public DecNode<E> anti(double address, DecNode<E> anti_address) {
-        if (this.anti == null) {
-            this.anti = new DecTree<DecNode<E>>();
-        }
-        DecTree<DecNode<E>> opTree = this.anti.paveTo(address);
-        opTree.ensureDtC().node.element = anti_address;
-        return anti(address);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder retString = new StringBuilder(
-                "<n: " + this.element+" || ");
-        if (this.pro != null) {
-            retString.append("p: " + this.pro.toString());
-        }
-        if (this.anti != null) {
-            retString.append("a: " + this.anti.toString());
-        }
-        retString.append("> ");
-        return retString.toString();
+        return Double.parseDouble(addressString);
     }
 }
