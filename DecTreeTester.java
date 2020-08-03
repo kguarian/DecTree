@@ -62,7 +62,7 @@ public class DecTreeTester {
             if (this.intTree.pWdev0(i) == null || this.strTree.pWdev0(i) == null) {
                 return callAfterFail("Failed retrieval type 1 (null Tree) at index " + i, 1);
             }
-            if (this.intTree.get(i) != i || !this.strTree.get(i).equals(Double.toString(i))) {
+            if (this.intTree.dev0(i) != i || !this.strTree.dev0(i).equals(Double.toString(i))) {
                 return callAfterFail("Failed retrieval type 2 (incorrect return value) at index " + i, 2);
             }
         }
@@ -82,7 +82,7 @@ public class DecTreeTester {
             this.strTree.dev0(i, Double.toString(i));
         }
         for (double i = -1 / 7d - 10; i < 10; i += 1) {
-            System.out.printf("%s\n", strTree.get(i));
+            System.out.printf("%s\n", strTree.dev0(i));
         }
         return callAfterPass();
     }

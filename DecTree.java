@@ -105,7 +105,7 @@ class DecTree<D> {
      *                it will return
      * @return this.tGet(address).node
      */
-    public D get(double address) {
+    public D dev0(double address) {
         return this.pWdev0(address).dev0();
     }
 
@@ -473,7 +473,7 @@ class DecTree<D> {
     }
 
     public DecTree<D> dev1(double address) {
-        return this.dev2.get(address);
+        return this.dev2.dev0(address);
     }
 
     protected DecTree<DecTree<D>> dev2() {
