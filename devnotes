@@ -1,3 +1,0 @@
-Digit Tree. access a subtree with tGet(its index ("ident")). subnode with nGet("ident"). Element with eGet("ident").
-Digit Node. access nodes in protrees and antitrees, indexed linkedlists.
-Other Methods. Convenient.

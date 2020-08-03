@@ -1,6 +1,6 @@
 class DecTree<D> {
 
-    protected DecTree<D> parent;
+    protected DecTree parent;
     D dev0;
     DecTree<D> dt0;
     DecTree<D> dt1;
@@ -85,6 +85,14 @@ class DecTree<D> {
         return this.dtC;
     }
 
+    protected DecTree<DecTree<D>> ensureDev2(){
+        if (this.dev2 == null) {
+            this.dev2 = new DecTree<DecTree<D>>(-3);
+            this.dev2.parent = this;
+        }
+        return this.dev2;
+    }
+
     protected DecTree<DecTree<D>> ensureDtP() {
         this.dev2 = this.dev2 != null ? this.dev2 : new DecTree<DecTree<D>>();
         return this.dev2;
@@ -98,10 +106,10 @@ class DecTree<D> {
      * @return this.tGet(address).node
      */
     public D get(double address) {
-        return this.tGet(address).get();
+        return this.pWdev0(address).dev0();
     }
 
-    public D get() {
+    public D dev0() {
         return this.dev0;
     }
 
@@ -295,20 +303,21 @@ class DecTree<D> {
      * @param element
      * @return
      */
-    public DecTree<D> add(double address, D element) {
+    public DecTree<D> dev0(double address, D element) {
         DecTree<D> opTree = this.paveTo(address);
         while (opTree.dtC != null) {
-            opTree = opTree.ensureDtC();
+            opTree = opTree.dtC;
         }
-        opTree.ensureDtC().dev0 = element;
-        return opTree.dtC;
+        DecTree<D> retTree = opTree.ensureDtC();
+        retTree.dev0=element;
+        return retTree;
     }
 
     @Override
     public String toString() {
-        String retString = this.dev0 != null ?this.type + ": "+this.dev0+ " " : "";
+        String retString = this.dev0 != null ? this.type + ": " + this.dev0 + " " : "";
 
-        //  CODE BLOCK
+        // CODE BLOCK
         {
             DecTree<D> opTree = this.dt0;
             if (opTree != null) {
@@ -370,7 +379,7 @@ class DecTree<D> {
                 retString += this.dev2.toString();
             }
         }
-        //END CODE BLOCK
+        // END CODE BLOCK
 
         return retString;
     }
@@ -381,12 +390,12 @@ class DecTree<D> {
      * @param address
      * @return in description
      */
-    public DecTree<D> tGet(double address) {
+    public DecTree<D> pWdev0(double address) {
         return this.goGrab(address).dtC;
     }
 
     public D pGet() {
-        return this.dev2.dev0.get();
+        return this.dev2.dev0.dev0();
     }
 
     /**
@@ -395,26 +404,14 @@ class DecTree<D> {
      * @param address
      * @param tree
      */
-    public void tReplace(double address, DecTree<D> tree) {
-        DecTree<D> opTree = this.goGrab(address);
-        opTree.dt0 = tree.dt0;
-        opTree.dt1 = tree.dt1;
-        opTree.dt2 = tree.dt2;
-        opTree.dt3 = tree.dt3;
-        opTree.dt4 = tree.dt4;
-        opTree.dt5 = tree.dt5;
-        opTree.dt6 = tree.dt6;
-        opTree.dt7 = tree.dt7;
-        opTree.dt8 = tree.dt8;
-        opTree.dt9 = tree.dt9;
-        opTree.dtN = tree.dtN;
-        opTree.dtC = tree.dtC;
-        opTree.dtD = tree.dtD;
-        opTree.dev2 = tree.dev2;
-        opTree.dev0 = tree.dev0;
+    public void r_dev0(double address, DecTree<D> tree) {
+        DecTree<D> opTree = this.goGrab(address
+                - (address / Math.pow(10, (int) Math.log10(address)) * (Math.pow(10, (int) Math.log10(address) - 1)))); // first//
+                                                                                                                        // digit
+        $getChildWithIdAndParent(0, opTree);
     }
 
-    public void tReplace(DecTree<D> tree) {
+    public void tr_dev0(DecTree<D> tree) {
         this.dt0 = tree.dt0;
         this.dt1 = tree.dt1;
         this.dt2 = tree.dt2;
@@ -438,20 +435,13 @@ class DecTree<D> {
      * 
      * @param address
      */
-    public void rm(double address) {
-        DecTree<D> opTree = this.tGet(address);
-        if (opTree.dtC == null) {
-            opTree.dev0 = null;
-            return;
-        } else {
-            DecTree<D> dtC = opTree.dtC;
-            while (dtC != null) {
-                opTree.dev0 = dtC.dev0;
-                opTree = dtC;
-                dtC = dtC.dtC;
-            }
-            opTree.dtC = null;
+    public void eksdev0(double address) {// remove at dev0
+        DecTree<D> opTree = this.pWdev0(address);
+        while (opTree.dtC != null) {
+            opTree.dev0 = opTree.dtC.dev0;
+            opTree = opTree.dtC;
         }
+        opTree.dev0 = null;
     }
 
     /**
@@ -459,7 +449,7 @@ class DecTree<D> {
      * 
      * @param address
      */
-    public void rmChain(double address) {
+    public void eksyldev0(double address) {// remove this and all children at and under dev0
         DecTree<D> opTree = this.goGrab(address);
         opTree.dtC = null;
     }
@@ -471,9 +461,11 @@ class DecTree<D> {
      */
     public void rmTree(double address) {
         DecTree<D> opTree = this.goGrab(address).parent;
-        byte firstDigit = (byte) (address / Math.pow(10, Math.log10(address)) + 0.001);
+        byte firstDigit = (byte) (address / Math.pow(10, Math.log10(address)) + Double.MIN_VALUE);
 
         // gets first digit of address, should account for floating point errors too
+        // except those within minval of specified address
+        // Extension cord?
         // (constant).
         // also byte's smaller than double XD
         opTree = $getChildWithIdAndParent(firstDigit, opTree);
@@ -484,18 +476,22 @@ class DecTree<D> {
         return this.dev2.get(address);
     }
 
-    protected DecTree<DecTree<D>> dev2(){return this.dev2;}
-    //TODO: REMOVE dev2() BEFORE FINAL!!!
+    protected DecTree<DecTree<D>> dev2() {
+        return this.dev2;
+    }
+    // TODO: REMOVE dev2() BEFORE FINAL!!!
 
     public DecTree<D> dev1(double address, D element) {
         this.dev2 = this.dev2 != null ? this.dev2 : new DecTree<DecTree<D>>();
-        return this.dev2.add(address, new DecTree<D>(element)).get();
+        return this.ensureDev2().dev0(address, new DecTree<D>(element)).dev0();
+    }
+
+    public DecTree<DecTree<D>> dev2(double address) {
+        return this.ensureDev2().goGrab(address).dtC;
     }
 
     public DecTree<DecTree<D>> dev2(double address, DecTree<D> tree) {
-        DecTree<DecTree<D>> opTree = this.ensureDtP().paveTo(address).ensureDtC();
-        opTree.element(tree);
-        return opTree;
+        return this.ensureDev2().dev0(address, tree);
     }
 
     public void tie(DecTree<D> otherTree) {
