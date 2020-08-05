@@ -46,7 +46,7 @@ public class DBoard {
     }
 
     private void menu() throws IOException {
-        String menu = "MENU\n****\nadd\nremove\ndis\npin\nunpin\nfinished\nclear\nquit\n_______";
+        String menu = "MENU\n****\nadd\nrm\ndis\npin\nunpin\nfinished\nclear\nquit\n_______";
         String add = "add";
         String rm = "rm";
         String dis = "dis";
