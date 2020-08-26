@@ -15,7 +15,7 @@ public class DBoard {
         this.pinned = new DecTree<String>();
         String man = "\nAdd Decs to the board, then pin them by their tags.\n";
 
-        pinned.dev0(0, man);
+        pinned.add(0, man);
         this.pins = 1;
     }
 
@@ -74,9 +74,9 @@ public class DBoard {
             while (!finishedLoop) {
                 String pinAddress = prompt("tag");
                 try {
-                    String pinString = board.dev0(stringHasher(pinAddress));
+                    String pinString = board.get(stringHasher(pinAddress));
                     if (pinString != null) {
-                        pinned.dev0(pins++, pinString);
+                        pinned.add(pins++, pinString);
                         finishedLoop = true;
                     }
                 } catch (NullPointerException e) {
@@ -85,7 +85,7 @@ public class DBoard {
             }
         } else if (input.equals(unpin)) {
             if (pins > 0) {
-                this.pinned.eksdev0(--pins);
+                this.pinned.rm(--pins);
             }
             return;
         } else if (input.equals(finished)) {
@@ -110,13 +110,13 @@ public class DBoard {
         tag = prompt("ADD_tag ");
         dec = prompt("dec ");
 
-        board.dev0(stringHasher(tag), dec);
+        board.add(stringHasher(tag), dec);
     }
 
     private void rmDec() throws IOException {
         String tag = prompt("RM_tag");
         try {
-            board.eksdev0(stringHasher(tag));
+            board.rm(stringHasher(tag));
         } catch (NullPointerException e) {
             boolean leaveLoop = false;
             while (!leaveLoop) {
@@ -140,7 +140,7 @@ public class DBoard {
         // (https://stackoverflow.com/questions/2979383/java-clear-the-console)
 
         for (int i = finished; i < pins; i++) {
-            System.out.println(pinned.dev0(i));
+            System.out.println(pinned.get(i));
         }
         System.out.println();
         menu();
