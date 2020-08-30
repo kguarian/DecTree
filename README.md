@@ -1,4 +1,16 @@
-# DecTree
+#DecTree
+
+Code Confidence Agreement:
+If you have access to any code from uTwitch1001 and MalignedAutopilot's DecTree repository and are not either uTwitch1001's or MalignedAutopilot's original account owner, you agree not to assume this project as your own or to share any information about it with anyone who uTwitch1001 or MalignedAutipilot's original account owners explicitly authorized to have information about this repository or project.
+
+The following Github Users (as of 25AUG2020) are authorized to access this project and repository:
+
+---BEGINNING OF LIST---
+
+    Aricky3
+    haythamallos
+
+---END OF LIST---------
 
 DEC_TREE info:
 
@@ -6,9 +18,9 @@ DEC_TREE info:
         generic, so one might use it to store (**in RAM, for now**) double-indexed data and arrangements of double-indexed data.
 
         MAIN METHODS for DecTree<D> { //badum tss
-            dev0(double,D) //add element at double index (address)
-            dev0(double) //retrieve from that address
-            ensureDev1() //ensure that dev1 (and dev2) exists
+            add(double,D) //add element at double index (address)
+            get(double) //retrieve from that address
+            tGet(double) //retrieves dtC DecTree
             ensureDev2() //ensure that dev2 exists
             dev1(double, D) //add double index at specified double value address
             dev1(double) //retrieve ""

@@ -8,7 +8,7 @@
  *            element) creates DecTree
  */
 
-public class DecTree<E> implements Dec {
+public class DecTree<E> {
 
     E data;
     // stored
@@ -31,6 +31,8 @@ public class DecTree<E> implements Dec {
     // decimal
     DecTree<E> dtP;
     // dec tree parent
+    DecTree<E> dev;
+    //for developer use. Be Responsible. Be Creative. Be Productive.
     double ref;
     //
     DecTree<String> tags;
@@ -127,7 +129,7 @@ public class DecTree<E> implements Dec {
      * @param opTree
      * @return opTree.dt[mod]
      */
-    private DecTree<E> $getChildWithIdAndParent(int mod, DecTree<E> opTree) {
+    protected DecTree<E> $getChildWithIdAndParent(int mod, DecTree<E> opTree) throws NullPointerException {
         if (mod == -10) {
             opTree = opTree.dtD;
         }
@@ -276,7 +278,7 @@ public class DecTree<E> implements Dec {
      * @param address
      * @return the addressed Dec
      */
-    protected DecTree<E> goGrab(double address) {
+    protected DecTree<E> goGrab(double address) throws NullPointerException{
         double copyID = address;
         DecTree<E> opTree = this;
         if (copyID < 0) {
@@ -336,7 +338,7 @@ public class DecTree<E> implements Dec {
      * @param address
      * @return in description
      */
-    public DecTree<E> tGet(double address) {// read dev0
+    public DecTree<E> tGet(double address) throws NullPointerException{// read dev0
         return this.goGrab(address).dtC;
     }
 
@@ -424,70 +426,180 @@ public class DecTree<E> implements Dec {
 
     @Override
     public String toString() {
+        // setup
+        char nullElement = 'ɩ';
+        char treeInit = '»';
+        char dataInit = '>';
+        char dataTerm = '<';
+        char treeTerm = '«';
 
-        StringBuilder retString = new StringBuilder();
-        retString.append("дא" + data + "дα");
-        if (this.dt0 != null) {
-            retString.append("א0" + dt0.toString() + "пα");
+        DecTree<E> opTree = this;
+        String retString = Character.toString(treeInit);
+
+        if (opTree.data == null) {
+            retString += nullElement;
+        } else {
+            retString += (dataInit + opTree.data.toString() + dataTerm);
         }
-        if (this.dt1 != null) {
-            retString.append("א1" + dt1.toString() + "пα");
+        if (opTree.dt0 != null) {
+            retString += ('0' + opTree.dt0.toString());
         }
-        if (this.dt2 != null) {
-            retString.append("א2" + dt2.toString() + "пα");
+        if (opTree.dt1 != null) {
+            retString += ('1' + opTree.dt1.toString());
         }
-        if (this.dt3 != null) {
-            retString.append("א3" + dt3.toString() + "пα");
+        if (opTree.dt2 != null) {
+            retString += ('2' + opTree.dt2.toString());
         }
-        if (this.dt4 != null) {
-            retString.append("א4" + dt4.toString() + "пα");
+        if (opTree.dt3 != null) {
+            retString += ('3' + opTree.dt3.toString());
         }
-        if (this.dt5 != null) {
-            retString.append("א5" + dt5.toString() + "пα");
+        if (opTree.dt4 != null) {
+            retString += ('4' + opTree.dt4.toString());
         }
-        if (this.dt6 != null) {
-            retString.append("א6" + dt6.toString() + "пα");
+        if (opTree.dt5 != null) {
+            retString += ('5' + opTree.dt5.toString());
         }
-        if (this.dt7 != null) {
-            retString.append("א7" + dt7.toString() + "пα");
+        if (opTree.dt6 != null) {
+            retString += ('6' + opTree.dt6.toString());
         }
-        if (this.dt8 != null) {
-            retString.append("א8" + dt8.toString() + "пα");
+        if (opTree.dt7 != null) {
+            retString += ('7' + opTree.dt7.toString());
         }
-        if (this.dt9 != null) {
-            retString.append("א9" + dt9.toString() + "пα");
+        if (opTree.dt8 != null) {
+            retString += ('8' + opTree.dt8.toString());
         }
-        if (this.dtC != null) {
-            retString.append("אc" + dtC.toString() + "пα");
+        if (opTree.dt9 != null) {
+            retString += ('9' + opTree.dt9.toString());
         }
-        if (this.dtD != null) {
-            retString.append("אd" + dtD.toString() + "пα");
+        if (opTree.dtD != null) {
+            retString += ('D' + opTree.dtD.toString());
         }
-        if (this.dtN != null) {
-            retString.append("אp" + dtN.toString() + "пα");
+        if (opTree.dtN != null) {
+            retString += ('N' + opTree.dtN.toString());
         }
-        return retString.toString();
+        if (opTree.dtC != null) {
+            retString += ('C' + opTree.dtC.toString()); // most frequently used. move to front if toString speed is an
+                                                        // issue
+        }
+        retString += treeTerm;
+        return retString;
     }
 
-    //*****TODO: UNFINISHED!!! ONLY COMMITTED FOR RICKY. */
-    public DecTree<String> fromString(String input){
-        char treeInit = 'א';
-        char dataInit = 'д';
-        char[] parent = new char[]{'п','α'};
-        int currentCharIndex = 0;
+    // *****TODO: UNFINISHED!!! ONLY COMMITTED FOR RICKY. */
+    public DecTree<String> fromString(String input) {
+        // setup
+        char nullElement = 'ɩ';
+        char treeInit = '»';
+        char dataInit = '>';
+        char dataTerm = '<';
+        char treeTerm = '«';
+
         DecTree<String> retTree = new DecTree<String>();
         DecTree<String> opTree = retTree;
-        boolean notFinished = true;
-        while(notFinished){
-            if(input.charAt(currentCharIndex)=='д' && input.charAt(currentCharIndex+1)=='א'){
-                
-                currentCharIndex+=2;
-                while(input.charAt(currentCharIndex)!=parent[0] && input.charAt(currentCharIndex+1)!=parent[1]){
+
+        for (int i = 0; i < input.length(); i++) {
+            int nextTree = 401; // Not Found XD
+            if (input.charAt(i) == treeTerm) {
+                opTree = opTree.dtP;
+            }
+            else if (input.charAt(i) == nullElement) {
+                opTree.data = null;
+                continue;
+            } else if (input.charAt(i) == dataInit) {
+                String newData = "";
+                for (int j = i; input.charAt(j) != dataTerm; j++) {
+                    newData += input.charAt(j);
+                }
+                opTree.data = newData;
+            } else if (input.charAt(i) == '0') {
+                nextTree = 0;
+                opTree.dt0 = opTree.$ensureChildWithIdAndParent(0, opTree);
+            } else if (input.charAt(i) == '1') {
+                nextTree = 1;
+                opTree.dt1 = opTree.$ensureChildWithIdAndParent(1, opTree);
+            } else if (input.charAt(i) == '2') {
+                nextTree = 2;
+                opTree.dt2 = opTree.$ensureChildWithIdAndParent(2, opTree);
+            } else if (input.charAt(i) == '3') {
+                nextTree = 3;
+                opTree.dt3 = opTree.$ensureChildWithIdAndParent(3, opTree);
+            } else if (input.charAt(i) == '4') {
+                nextTree = 4;
+                opTree.dt4 = opTree.$ensureChildWithIdAndParent(4, opTree);
+            } else if (input.charAt(i) == '5') {
+                nextTree = 5;
+                opTree.dt5 = opTree.$ensureChildWithIdAndParent(5, opTree);
+            } else if (input.charAt(i) == '6') {
+                nextTree = 6;
+                opTree.dt6 = opTree.$ensureChildWithIdAndParent(6, opTree);
+            } else if (input.charAt(i) == '7') {
+                nextTree = 7;
+                opTree.dt7 = opTree.$ensureChildWithIdAndParent(7, opTree);
+            } else if (input.charAt(i) == '8') {
+                nextTree = 8;
+                opTree.dt8 = opTree.$ensureChildWithIdAndParent(8, opTree);
+            } else if (input.charAt(i) == '9') {
+                nextTree = 9;
+                opTree.dt9 = opTree.$ensureChildWithIdAndParent(9, opTree);
+            } else if (input.charAt(i) == 'C') {
+                nextTree = -3;
+                opTree.dtC = opTree.$ensureChildWithIdAndParent(-3, opTree);
+            } else if (input.charAt(i) == 'D') {
+                nextTree = -10;
+                opTree.dtD = opTree.$ensureChildWithIdAndParent(-10, opTree);
+            } else if (input.charAt(i) == 'N') {
+                nextTree = -1;
+                opTree.dtN = opTree.$ensureChildWithIdAndParent(-1, opTree);
+            } else if (input.charAt(i) == treeInit) {
+                switch (nextTree) {
+                    case 0:
+                        opTree = opTree.dt0;
+                        break;
+                    case 1:
+                        opTree = opTree.dt1;
+                        break;
+                    case 2:
+                        opTree = opTree.dt2;
+                        break;
+                    case 3:
+                        opTree = opTree.dt3;
+                        break;
+                    case 4:
+                        opTree = opTree.dt4;
+                        break;
+                    case 5:
+                        opTree = opTree.dt5;
+                        break;
+                    case 6:
+                        opTree = opTree.dt6;
+                        break;
+                    case 7:
+                        opTree = opTree.dt7;
+                        break;
+                    case 8:
+                        opTree = opTree.dt8;
+                        break;
+                    case 9:
+                        opTree = opTree.dt9;
+                        break;
+                    case -1:
+                        opTree = opTree.dtN;
+                        break;
+                    case -3:
+                        opTree = opTree.dtC;
+                        break;
+                    case -10:
+                        opTree = opTree.dtD;
+                        break;
+
+                    default:
+                        System.out.println(i+", "+nextTree);
+                        throw new IllegalArgumentException();
                 }
             }
-            if(input.charAt(currentCharIndex)=='א'){}
+
         }
-        return null;
+        return retTree;
     }
 
     /*
@@ -495,6 +607,12 @@ public class DecTree<E> implements Dec {
      */
 
     public static void main(String[] args) {
+        DecTree<String> demoTree = new DecTree<String>();
+        for(long i = 0; true; i++){
+            demoTree.dt0=demoTree.$ensureChildWithIdAndParent(0,demoTree);
+            demoTree=demoTree.dt0;
+            System.out.println(i);
+        }
     }
 
 }

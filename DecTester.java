@@ -8,7 +8,7 @@ public class DecTester {
         }
         try {
             for (double i = 0; i < 10; i += 0.1 / (++i)) {
-                System.out.println(tsTree.get(i*i));
+                System.out.println(tsTree.get(i * i));
             }
         } catch (NullPointerException e) {
             System.out.println("add/get test failed (tsAdd");
@@ -34,14 +34,36 @@ public class DecTester {
         System.out.println(ts.get(0).get(512)==valueInt);
         System.out.println(ts.tGet(0).get(0).get(0.1134)==valueStr);
         System.out.println(ts.tGet(0).tGet(0).get(0).get(3453)==valueHash);
+        System.out.println(ts.toString());
     }
 
-    public static void tests(){
+    public static void tsToString(){
+        DecTree<String> tsDecTree = new DecTree<String>();
+        for(int i = 0; i < 5; i++){
+            tsDecTree.add(i,"Element");
+        }
+        System.out.println(tsDecTree.toString());
+    }
+
+    public static void tsToFromString(){
+        DecTree<String> tsTree = new DecTree<String>();
+        for(int i = 0; i < 5; i++){
+            tsTree.add(i,"Element");
+        }
+        DecTree<String> coTree = tsTree.fromString(tsTree.toString());
+        for(int i = 0; i < 5; i++){
+            System.out.println(tsTree.get(i));
+        }
+    }
+
+    public static void tests() {
         tsAdd();
         tsNest();
+        tsToString();
+        tsToFromString();
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         tests();
     }
-} 
+}
