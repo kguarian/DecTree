@@ -1,0 +1,13 @@
+C:\Users\ridea\Documents\HOME\coding\DecTree\C#\DecTree\DecTree\ConsoleApp2\bin\Debug\netcoreapp3.1\Storage.exe
+C:\Users\ridea\Documents\HOME\coding\DecTree\C#\DecTree\DecTree\ConsoleApp2\bin\Debug\netcoreapp3.1\Storage.deps.json
+C:\Users\ridea\Documents\HOME\coding\DecTree\C#\DecTree\DecTree\ConsoleApp2\bin\Debug\netcoreapp3.1\Storage.runtimeconfig.json
+C:\Users\ridea\Documents\HOME\coding\DecTree\C#\DecTree\DecTree\ConsoleApp2\bin\Debug\netcoreapp3.1\Storage.runtimeconfig.dev.json
+C:\Users\ridea\Documents\HOME\coding\DecTree\C#\DecTree\DecTree\ConsoleApp2\bin\Debug\netcoreapp3.1\Storage.dll
+C:\Users\ridea\Documents\HOME\coding\DecTree\C#\DecTree\DecTree\ConsoleApp2\bin\Debug\netcoreapp3.1\Storage.pdb
+C:\Users\ridea\Documents\HOME\coding\DecTree\C#\DecTree\DecTree\ConsoleApp2\obj\Debug\netcoreapp3.1\Storage.csprojAssemblyReference.cache
+C:\Users\ridea\Documents\HOME\coding\DecTree\C#\DecTree\DecTree\ConsoleApp2\obj\Debug\netcoreapp3.1\Storage.AssemblyInfoInputs.cache
+C:\Users\ridea\Documents\HOME\coding\DecTree\C#\DecTree\DecTree\ConsoleApp2\obj\Debug\netcoreapp3.1\Storage.AssemblyInfo.cs
+C:\Users\ridea\Documents\HOME\coding\DecTree\C#\DecTree\DecTree\ConsoleApp2\obj\Debug\netcoreapp3.1\Storage.csproj.CoreCompileInputs.cache
+C:\Users\ridea\Documents\HOME\coding\DecTree\C#\DecTree\DecTree\ConsoleApp2\obj\Debug\netcoreapp3.1\Storage.dll
+C:\Users\ridea\Documents\HOME\coding\DecTree\C#\DecTree\DecTree\ConsoleApp2\obj\Debug\netcoreapp3.1\Storage.pdb
+C:\Users\ridea\Documents\HOME\coding\DecTree\C#\DecTree\DecTree\ConsoleApp2\obj\Debug\netcoreapp3.1\Storage.genruntimeconfig.cache
