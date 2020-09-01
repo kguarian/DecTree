@@ -15,17 +15,13 @@ namespace Storage
         DecTree<E> dt8;
         DecTree<E> dt9;
         DecTree<E> dtC;
-        DecTree<E> dtD;
         DecTree<E> dtN;
         DecTree<E> dtP;
         DecTree<E> dev;
+        DecTree<long> Primes;
         E element;
 
         int type;
-        int subAdds = 0;
-        int size = 0;
-        int curr = 0;
-        int RMCYCLE = 0;
 
         static int ZERO = 0;
         static int ONE = 1;
@@ -39,11 +35,16 @@ namespace Storage
         static int NINE = 9;
         static int NEGATIVE = -1;
         static int CHILD = -3;
-        static int DECIMAL = -10;
         static int PARENT = -100;
 
         public DecTree()
         {
+        }
+
+        public DecTree(bool init){
+            if(init){
+                this.Primes = new DecTree<long>();
+            }
         }
 
         public DecTree(int type)
@@ -63,137 +64,89 @@ namespace Storage
             {
                 case 0:
                     {
-                        if (this.dt0 == null)
-                        {
-                            this.dt0 = new DecTree<E>();
-                        }
+                        this.dt0 ??= new DecTree<E>(ZERO);
                         opTree = this.dt0;
                         break;
                     }
 
                 case 1:
                     {
-                        if (this.dt1 == null)
-                        {
-                            this.dt1 = new DecTree<E>();
-                        }
+                        this.dt1 ??= new DecTree<E>(ONE);
                         opTree = this.dt1;
                         break;
                     }
 
                 case 2:
                     {
-                        if (this.dt2 == null)
-                        {
-                            this.dt2 = new DecTree<E>();
-                        }
+                        this.dt2 ??= new DecTree<E>(TWO);
                         opTree = this.dt2;
                         break;
                     }
 
                 case 3:
                     {
-                        if (this.dt3 == null)
-                        {
-                            this.dt3 = new DecTree<E>();
-                        }
+                        this.dt3 ??= new DecTree<E>(THREE);
                         opTree = this.dt3;
                         break;
                     }
                 case 4:
                     {
-                        if (this.dt4 == null)
-                        {
-                            this.dt4 = new DecTree<E>();
-                        }
+                        this.dt4 ??= new DecTree<E>(FOUR);
                         opTree = this.dt4;
                         break;
                     }
 
                 case 5:
                     {
-                        if (this.dt5 == null)
-                        {
-                            this.dt5 = new DecTree<E>();
-                        }
+                       this.dt5 ??= new DecTree<E>(FIVE);
                         opTree = this.dt5;
                         break;
                     }
 
                 case 6:
                     {
-                        if (this.dt6 == null)
-                        {
-                            this.dt6 = new DecTree<E>();
-                        }
+                        this.dt6 ??= new DecTree<E>(SIX);
                         opTree = this.dt6;
                         break;
                     }
 
                 case 7:
                     {
-                        if (this.dt7 == null)
-                        {
-                            this.dt7 = new DecTree<E>();
-                        }
+                        this.dt7 ??= new DecTree<E>(SEVEN);
                         opTree = this.dt7;
                         break;
                     }
                 case 8:
                     {
-                        if (this.dt8 == null)
-                        {
-                            this.dt8 = new DecTree<E>();
-                        }
+                        this.dt8 ??= new DecTree<E>(EIGHT);
                         opTree = this.dt8;
                         break;
                     }
 
                 case 9:
                     {
-                        if (this.dt9 == null)
-                        {
-                            this.dt9 = new DecTree<E>();
-                        }
+                        this.dt9 ??= new DecTree<E>(NINE);
                         opTree = this.dt9;
                         break;
                     }
 
                 case -1:
                     {
-                        if (this.dtN == null)
-                        {
-                            this.dtN = new DecTree<E>();
-                        }
+                        this.dtN ??= new DecTree<E>(NEGATIVE);
                         opTree = this.dtN;
                         break;
                     }
 
                 case -3:
                     {
-                        if (this.dtC == null)
-                        {
-                            this.dtC = new DecTree<E>();
-                        }
+                        this.dtC ??= new DecTree<E>(CHILD);
                         opTree = this.dtC;
-                        break;
-                    }
-                case -10:
-                    {
-                        if (this.dtD == null)
-                        {
-                            this.dtD = new DecTree<E>();
-                        }
-                        opTree = this.dtD;
                         break;
                     }
 
                 case -100:
                     {
-                        if (this.dtP == null)
-                        {
-                            this.dtP = new DecTree<E>();
-                        }
+                        this.dtP ??= new DecTree<E>(PARENT);
                         opTree = this.dtP;
                         break;
                     }
@@ -204,6 +157,7 @@ namespace Storage
 
             }
             opTree.dtP = this;
+            opTree.Primes = this.Primes;
             return opTree;
         }
 
@@ -282,12 +236,6 @@ namespace Storage
                         opTree = this.dtC;
                         break;
                     }
-                case -10:
-                    {
-                        opTree = this.dtD;
-                        break;
-                    }
-
                 case -100:
                     {
                         opTree = this.dtP;
@@ -309,32 +257,21 @@ namespace Storage
             {
                 return this;
             }
-            if(address < 0)
+            if (address < 0)
             {
-                opTree = opTree.MakeDecTree(-1);
+                opTree = opTree.MakeDecTree(NEGATIVE);
                 address *= -1;
             }
-            while ((int) address >= 1)
+            while ((int)address > 0)
             {
                 int mod = (int)address % 10;
-                address = (double)((int) address / 10);
-                opTree = opTree.MakeDecTree(mod);
-            }
-            if ((int) address != 0)
-            {
-                opTree = opTree.MakeDecTree(DECIMAL);
-            }
-            while (address != 0)
-            {
-                address *= 10;
-                int mod = (int)address;
-                address -= mod;
+                address = (double)((int)address / 10);
                 opTree = opTree.MakeDecTree(mod);
             }
             return opTree;
         }
 
-        public DecTree<E> GoGet(double address)
+        public DecTree<E> GoGet(long address)
         {
             DecTree<E> retTree = this;
             DecTree<E> opTree = retTree;
@@ -344,24 +281,13 @@ namespace Storage
             }
             if (address < 0)
             {
-                opTree = opTree.GetDecTree(-1);
+                opTree = opTree.GetDecTree(NEGATIVE);
                 address *= -1;
             }
-            while (address >= 1)
+            while (address > 0)
             {
                 int mod = (int)address % 10;
-                address = (double)((int) address / 10);
-                opTree = opTree.GetDecTree(mod);
-            }
-            if (address != 0)
-            {
-            opTree = opTree.GetDecTree(DECIMAL);
-            }
-            while (address != 0)
-            {
-                address *= 10;
-                int mod = (int)address;
-                address -= mod;
+                address /= 10;
                 opTree = opTree.GetDecTree(mod);
             }
             return opTree;
@@ -369,14 +295,16 @@ namespace Storage
 
         public DecTree<E> Add(E element)
         {
-            if (this.dtC == null){
+            if (this.dtC == null)
+            {
                 this.dtC = this.MakeDecTree(-3);
                 this.dtC.element = element;
-            } else
-            {
-                this.dtC.Add(element);
+                return this.dtC;
             }
-            return this.dtC;
+            else
+            {
+                return this.dtC.Add(element);
+            }
         }
 
         public DecTree<E> AddL(E element)
@@ -395,8 +323,7 @@ namespace Storage
         }
         public DecTree<E> Add(double address, E element)
         {
-            DecTree<E> opTree = this.PaveTo(address);
-            return opTree.Add(element);
+            return this.PaveTo(address).Add(element);
         }
 
         public DecTree<E> AddL(double address, E element)
@@ -424,7 +351,7 @@ namespace Storage
         {
             E retValue = default(E);
             DecTree<E> FocusTree = this;
-            if(FocusTree.dtC == null)
+            if (FocusTree.dtC == null)
             {
                 retValue = default(E);
                 return retValue;
@@ -432,11 +359,12 @@ namespace Storage
             else
             {
                 DecTree<E> opTree = FocusTree.dtC;
-                if(opTree.dtC == null)
+                if (opTree.dtC == null)
                 {
                     retValue = FocusTree.dtC.element;
                     FocusTree.dtC = null;
-                } else
+                }
+                else
                 {
                     retValue = FocusTree.dtC.element;
                     FocusTree.dtC = opTree.dtC;
@@ -474,35 +402,111 @@ namespace Storage
         {
             return this.PaveTo(address).RmL(address);
         }
-    }
 
-    class DecTester
-    {
-
-        public static Boolean TestAdd()
+        public long Hasher(string tag)
         {
-            DecTree<double> TestTree = new DecTree<double>();
-            for(double i = -2; i < 2; i += i/(1_000 * i))
+            int max = 0;
+            long hashValue = 0;
+            for (int i = 0; i < tag.Length; i++)
             {
-                TestTree.Add(i, i);
-            }
-            for(double i = -2; i < 2; i += i/(1_000 * i))
-            {
-                if (TestTree.Get(i) != i)
+                int currentChar = tag[i];
+                if (tag[i] > max)
                 {
-                    return false;
+                    max = currentChar;
                 }
             }
-            return true;
+            for (int i = 0; i < tag.Length; i++)
+            {
+                hashValue += tag[i] * this.Prime(i);
+            }
+            return hashValue;
         }
 
-        static void Tests()
+        // Level 0
+        public long Prime(long index)
         {
-            Console.WriteLine("Add: " + TestAdd());
-        }
-        static void Main(string[] args)
-        {
-            Tests();
+            DecTree<bool> used = new DecTree<bool>();
+            long Prime_Index = 0;
+            this.Primes.Add(0, 2);
+            for (long i = Primes.Get(Prime_Index) + 1; i < Primes.Get(Prime_Index) * 2; i++)
+            { // if(Bertrand's Postulate) {Infinite Loop}.
+                if (Prime_Index >= index)
+                {
+                    break;
+                }
+                for (long j = 0; j <= Prime_Index; j++)
+                {
+                    if (Prime_Index >= index)
+                    {
+                        break;
+                    }
+                    if (i % Primes.Get(j) == 0)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        used.Add(j, true);
+                        try
+                        {
+                            used.Get(Prime_Index);
+                        }
+                        catch (NullReferenceException e)
+                        {
+                            e.ToString();
+                            continue;
+                        }
+                        Primes.Add(++Prime_Index, i);
+                    }
+                    // LOOP ENDS HERE
+                }
+            }
+            return this.Primes.Get(index);
         }
     }
 }
+
+class DecTester
+{
+
+    public static bool TestAdd()
+    {
+        Storage.DecTree<double> TestTree = new Storage.DecTree<double>();
+        for (double i = 0; i < 999; i++)
+        {
+            TestTree.Add(i, i);
+        }
+        for (double i = 0; i < 999; i++)
+        {
+            if (TestTree.Get(i) != i)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static long TestHasher(String input){
+        Storage.DecTree<string> dtString = new Storage.DecTree<string>(true);
+        return dtString.Hasher(input);
+    }
+
+    public static long TestPrime(long index){
+        Storage.DecTree<string> dtString = new Storage.DecTree<string>(true);
+        return dtString.Prime(index);
+    }
+
+    static void Tests()
+    {
+        Console.WriteLine("Hasher: Hello World => " + TestHasher("Hello World"));
+        Console.WriteLine("Hasher: dlroW olleH => " + TestHasher("dlroW olleH"));
+        Console.WriteLine("Add && Retrieve: addresses 0->999 => " + TestAdd());
+        Console.WriteLine("Prime Finder: The 1,000th prime number is " + TestPrime(1_000));
+
+    }
+    static void Main(string[] args)
+    {
+        Tests();
+    }
+}
+//cursor rest point
