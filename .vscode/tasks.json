@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/C#/DecTree/DecTree/ConsoleApp2/Storage.csproj",
+                "${workspaceFolder}/DecTree.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/C#/DecTree/DecTree/ConsoleApp2/Storage.csproj",
+                "${workspaceFolder}/DecTree.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -32,7 +32,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/C#/DecTree/DecTree/ConsoleApp2/Storage.csproj",
+                "${workspaceFolder}/DecTree.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],

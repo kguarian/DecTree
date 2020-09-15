@@ -1,0 +1,13 @@
+C:\Users\ridea\Documents\HOME\coding\DecTree\obj\Debug\netcoreapp3.1\DecTree.AssemblyInfoInputs.cache
+C:\Users\ridea\Documents\HOME\coding\DecTree\obj\Debug\netcoreapp3.1\DecTree.AssemblyInfo.cs
+C:\Users\ridea\Documents\HOME\coding\DecTree\obj\Debug\netcoreapp3.1\DecTree.csproj.CoreCompileInputs.cache
+C:\Users\ridea\Documents\HOME\coding\DecTree\obj\Debug\netcoreapp3.1\DecTree.csprojAssemblyReference.cache
+C:\Users\ridea\Documents\HOME\coding\DecTree\bin\Debug\netcoreapp3.1\DecTree.exe
+C:\Users\ridea\Documents\HOME\coding\DecTree\bin\Debug\netcoreapp3.1\DecTree.deps.json
+C:\Users\ridea\Documents\HOME\coding\DecTree\bin\Debug\netcoreapp3.1\DecTree.runtimeconfig.json
+C:\Users\ridea\Documents\HOME\coding\DecTree\bin\Debug\netcoreapp3.1\DecTree.runtimeconfig.dev.json
+C:\Users\ridea\Documents\HOME\coding\DecTree\bin\Debug\netcoreapp3.1\DecTree.dll
+C:\Users\ridea\Documents\HOME\coding\DecTree\bin\Debug\netcoreapp3.1\DecTree.pdb
+C:\Users\ridea\Documents\HOME\coding\DecTree\obj\Debug\netcoreapp3.1\DecTree.dll
+C:\Users\ridea\Documents\HOME\coding\DecTree\obj\Debug\netcoreapp3.1\DecTree.pdb
+C:\Users\ridea\Documents\HOME\coding\DecTree\obj\Debug\netcoreapp3.1\DecTree.genruntimeconfig.cache
