@@ -29,14 +29,17 @@ namespace Dec
         private String UI_MUSTREFRESH()
         {
             DecString Menu = new DecString("Menu:\n");
-            Menu.AddString("mn - menu\n");
-            Menu.AddString("cr - create category\n");
-            Menu.AddString("ps - post dectag\n");
-            Menu.AddString("gr - grab\n");
-            Menu.AddString("mv - move\n");
-            Menu.AddString("pr - print\n");
-            Menu.AddString("hm - home\n");
-            Menu.AddString("qt - quit\n");
+            Menu.AddString("mn - menu (no arg)\n");
+            Menu.AddString("cr - create category (line arg)\n");
+            Menu.AddString("ps - post dectag (line arg)\n");
+            Menu.AddString("gr - grab (line arg)\n");
+            Menu.AddString("sh - shift (1 arg)\n");
+            Menu.AddString("mv - move (line arg)\n");
+            Menu.AddString("pr - print (no arg)\n");
+            Menu.AddString("hm - home (no args)\n");
+            Menu.AddString("qt - quit (no arg)\n");
+            Menu.AddString("sh - shift (1 arg)\n");
+
 
             if (firstRun)
             {
@@ -62,6 +65,18 @@ namespace Dec
                 return "created";
             }
 
+            if (inputArray[0] == "64144")
+            {
+                DecString hashed = new DecString();
+                for (int i = 1; i < inputArray.Length; i++)
+                {
+                    hashed.AddString(inputArray[i]);
+                    hashed.AddString(" ");
+                }
+                Console.WriteLine(DecTree<String>.Hasher(hashed.ToString()));
+                return "ha.";
+            }
+
             else if (inputArray[0] == "mv")
             {
                 try
@@ -78,6 +93,12 @@ namespace Dec
                 {
                 }
                 return "mv error";
+            }
+
+            else if (inputArray[0] == "sh")
+            {
+                userScope = userScope.shift(inputArray[1][0]);
+                return inputArray[1][0].ToString();
             }
 
             else if (inputArray[0] == "ps")

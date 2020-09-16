@@ -684,6 +684,10 @@ namespace Dec
             TestAdd();
 
         }
+
+        static void HasherCrash(String test){
+            
+        }
     }
     //cursor rest point
 }
