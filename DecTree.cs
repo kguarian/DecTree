@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 
 namespace Dec
 {
@@ -17,10 +19,11 @@ namespace Dec
         public DecTree<E> dtC;
         public DecTree<E> dtN;
         public DecTree<E> dtP;
-        static DecTree<long> primes = new DecTree<long>();
+        public DecTree<long> primes;
         public E element = default(E);
 
-        int type;
+        int type = 0;
+        int counter = 0;
 
         static int ZERO = 0;
         static int ONE = 1;
@@ -37,8 +40,10 @@ namespace Dec
         static int PARENT = -100;
 
         /* used to Make Type-Specific DecTrees*/
-        public DecTree(){}
-        public DecTree(int type)
+        public DecTree()
+        {
+        }
+        private DecTree(int type)
         {
             this.type = type;
         }
@@ -242,31 +247,30 @@ namespace Dec
         public DecTree<E> PaveTo(long address)
         {
             DecTree<E> retTree = this;
-            DecTree<E> opTree = retTree;
             if (address == 0)
             {
                 return this;
             }
             if (address < 0)
             {
-                opTree = opTree.MakeDecTree(NEGATIVE);
+                retTree = retTree.MakeDecTree(NEGATIVE);
                 address *= -1;
             }
             while ((int)address > 0)
+            // TODO: I kind of want to parse left to right but I don't want to sacrifice the runtime.
             {
                 int mod = (int)address % 10;
                 address /= 10;
-                opTree = opTree.MakeDecTree(mod);
+                retTree = retTree.MakeDecTree(mod);
             }
-            return opTree;
+            return retTree;
         }
 
         public DecTree<E> PaveTo(String address)
         {
             DecTree<E> retTree = this;
-            DecTree<E> opTree = retTree;
 
-            long longAddress = Hasher(address);
+            long longAddress = Hasher(0, address);
 
             if (longAddress == 0)
             {
@@ -274,16 +278,16 @@ namespace Dec
             }
             if (longAddress < 0)
             {
-                opTree = opTree.MakeDecTree(NEGATIVE);
+                retTree = retTree.MakeDecTree(NEGATIVE);
                 longAddress *= -1;
             }
             while ((int)longAddress > 0)
             {
                 int mod = (int)longAddress % 10;
                 longAddress /= 10;
-                opTree = opTree.MakeDecTree(mod);
+                retTree = retTree.MakeDecTree(mod);
             }
-            return opTree;
+            return retTree;
         }
 
         public DecTree<E> GoGet(long address)
@@ -314,7 +318,7 @@ namespace Dec
             DecTree<E> retTree = this;
             DecTree<E> opTree = retTree;
 
-            long longAddress = Hasher(address);
+            long longAddress = Hasher(0, address);
 
             if (longAddress == 0)
             {
@@ -362,7 +366,7 @@ namespace Dec
 
         public DecTree<E> Add(string address, E element)
         {
-            return this.PaveTo(Hasher(address)).Add(element);
+            return this.PaveTo(Hasher(0, address)).Add(element);
         }
 
         //<>Section<>
@@ -384,7 +388,7 @@ namespace Dec
         }
         public DecTree<E> AddL(string address, E element)
         {
-            DecTree<E> opTree = this.PaveTo(Hasher(address));
+            DecTree<E> opTree = this.PaveTo(Hasher(0, address));
             return opTree.AddL(element);
         }
 
@@ -395,7 +399,7 @@ namespace Dec
 
         public DecTree<E> TGet(String address)
         {
-            return this.PaveTo(address).dtC;
+            return this.GoGet(address).dtC;
         }
 
         public E Get(long address)
@@ -405,7 +409,7 @@ namespace Dec
 
         public E Get(string address)
         {
-            return this.PaveTo(Hasher(address)).Get();
+            return this.PaveTo(Hasher(0, address)).Get();
         }
 
         public E GetL(long address)
@@ -420,7 +424,7 @@ namespace Dec
 
         public E GetL(string address)
         {
-            DecTree<E> opTree = this.PaveTo(Hasher(address));
+            DecTree<E> opTree = this.PaveTo(Hasher(0, address));
             while (opTree.dtC != null)
             {
                 opTree = opTree.dtC;
@@ -450,7 +454,7 @@ namespace Dec
 
         public E Rm(String address)
         {
-            return this.Rm(Hasher(address));
+            return this.Rm(Hasher(0, address));
         }
 
         public E RmL()
@@ -486,9 +490,9 @@ namespace Dec
         }
 
 
-        public static long Hasher(string tag)
+        public long Hasher(long zero, string tag)
         {
-            long hashValue = 0;
+            long hashValue = zero;
             for (int i = 0; i < tag.Length; i++)
             {
                 hashValue += tag[i] * Prime(i);
@@ -497,20 +501,25 @@ namespace Dec
         }
 
         // Level 0
-        public static long Prime(long index)
+        public long Prime(long index)
         {
-            DecTree<bool> used = new DecTree<bool>();
-            long Prime_Index = 0;
-            primes.Add(0, 2);
-            for (long i = primes.Get(Prime_Index) + 1; i < primes.Get(Prime_Index) * 2; i++)
+            //only want to add once.
+            if (primes == null)
+            {
+                primes = new DecTree<long>();
+                primes.Add(0,2);
+            }
+
+            //can see how many times this method has been this.primes with primes.TGet(0) analysis.
+            for (long i = primes.Get(primes.counter) + 1; i < primes.Get(primes.counter) * 2; i++)
             { // if(Bertrand's Postulate) {Infinite Loop}.
-                if (Prime_Index >= index)
+                if (primes.counter >= index)
                 {
                     break;
                 }
-                for (long j = 0; j <= Prime_Index; j++)
+                for (long j = 0; j <= primes.counter; j++)
                 {
-                    if (Prime_Index >= index)
+                    if (primes.counter >= index)
                     {
                         break;
                     }
@@ -520,17 +529,10 @@ namespace Dec
                     }
                     else
                     {
-                        used.Add(j, true);
-                        try
+                        if (j == primes.counter)
                         {
-                            used.Get(Prime_Index);
+                            primes.Add(++primes.counter, i);
                         }
-                        catch (NullReferenceException e)
-                        {
-                            e.ToString();
-                            continue;
-                        }
-                        primes.Add(++Prime_Index, i);
                     }
                     // LOOP ENDS HERE
                 }
@@ -540,23 +542,14 @@ namespace Dec
 
         public override string ToString()
         {
-            return this.ConvertToString();
+            return this.ReadOut();
         }
-
-        private void WriteToFile(String content, String path)
-        {
-            //https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/file-system/how-to-write-to-a-text-file
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(path, true))
-            {
-                file.WriteLine(content);
-            }
-        }
-
-        private String ConvertToString()
+        private String ReadOut()
         {
             DecString retString = new DecString();
             retString.AddString("[");
-            if(element==null){
+            if (element == null)
+            {
                 retString.AddString("<>");
             }
             else
@@ -565,53 +558,22 @@ namespace Dec
                 retString.AddString(this.element.ToString());
                 retString.AddString(">");
             }
+            char ELEMENTMARKER = '‣';
+            char NULLMARKER = '⁄';
             DecTree<E>[] order = new DecTree<E>[] { dt0, dt1, dt2, dt3, dt4, dt5, dt6, dt7, dt8, dt9, dtC, dtN };
             foreach (DecTree<E> member in order)
             {
                 if (member != null)
                 {
-                    retString.AddString(member.ToString() + ",");
+                    retString.AddString(ELEMENTMARKER + member.ToString() + ELEMENTMARKER);
                 }
                 else
                 {
-                    retString.AddString(",");
+                    retString.AddString(NULLMARKER.ToString());
                 }
             }
             retString.AddString("]");
             return retString.ToString();
-        }
-
-        public long Record()
-        {
-            WriteToFile(ConvertToString(), @"C:\Users\ridea\Documents\HOME\coding\Jarvis\data\" + Hasher(this.ToString()) + ".txt");
-            long hashVal = Hasher(this.ToString());
-            return hashVal;
-        }
-
-        public void ReadIn(long hashVal)
-        {
-            //https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/file-system/how-to-read-from-a-text-file
-            string text = System.IO.File.ReadAllText(@"C:\Users\ridea\Documents\HOME\coding\Jarvis\data\" + hashVal + ".txt");
-            char[] record = text.ToCharArray();
-
-            DecTree<E> opTree;
-            bool finished = false;
-            int holdover = 0;
-            for (long i = 0; i < record.Length; i++)
-            {
-                char current = record[i];
-                switch (holdover)
-                {
-                    case '[':
-                        switch (current)
-                        {
-
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
         }
 
         //procedure sequence: DecTreeNav:
@@ -637,7 +599,7 @@ namespace Dec
             };
         }
 
-        public DecTree<E> move(String path)
+        public DecTree<E> Move(String path)
         {
             DecTree<E> opTree = this;
             for (int i = 0; i < path.Length; i++)
@@ -650,9 +612,9 @@ namespace Dec
 
     class Tests
     {
-        public static bool TestAdd()
+        DecTree<long> TestTree = new DecTree<long>();
+        public bool TestAdd()
         {
-            DecTree<double> TestTree = new DecTree<double>();
             for (long i = 0; i < 999; i++)
             {
                 TestTree.Add(i, i);
@@ -667,27 +629,56 @@ namespace Dec
             return true;
         }
 
-        public static long TestHasher(String input)
+        public long TestHasher(String input)
         {
-            return DecTree<object>.Hasher(input);
+            return TestTree.Hasher(0, input);
         }
 
-        public static long TestPrime(long index)
+        public long TestPrime(long index)
         {
             DecTree<object> dtString = new DecTree<object>();
-            return DecTree<object>.Prime(index);
+            return TestTree.Prime(index);
         }
 
-        static void tests()
+        public static String tests()
         {
-            Console.WriteLine("VolumeTests:");
-            TestAdd();
-
+            //Tests FileWriter and records ToString() method
+            DecTree<String> tsTree = new DecTree<String>();
+            int upperbound = int.Parse(Prompt("Test Size"));
+            for (int i = 0; i < upperbound; i++)
+            {
+                tsTree.Add(i, i.ToString());
+            }
+            String retString = tsTree.ToString();
+            FileWriter<String> fw = new FileWriter<String>(tsTree);
+            fw.Write("C:\\Users\\ridea\\Documents\\HOME\\coding\\DecTree\\DecTree.log", tsTree.ToString());
+            return retString;
         }
 
-        static void HasherCrash(String test){
-            
+        public static String Prompt(String prompt)
+        {
+            Console.Write(prompt + ": ");
+            String retString = Console.ReadLine();
+            Console.WriteLine();
+            return retString;
         }
+
+        static void HasherCrash(String test)
+        {
+
+        }
+    }
+
+    class Pair<E>
+    {
+        object[] pair = new object[2];
+        public Pair(DecTree<E> tree, int index)
+        {
+            pair[0] = tree;
+            pair[1] = index;
+        }
+
+        public object[] get => pair;
     }
     //cursor rest point
 }

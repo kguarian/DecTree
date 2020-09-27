@@ -1,0 +1,5 @@
+Hash code modulation:
+    (fixed-length chunks, hashed, string-concatenated).
+Different Bases For Prime Algorithm:
+    (different hash values)
+I/O? Serialization?

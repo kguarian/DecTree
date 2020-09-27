@@ -17,6 +17,8 @@ namespace Dec
         private DecTree<String> board;
         private int boardCtr = 0;
         private DecTree<String> userScope;
+        private DecTree<DecTree<String>> la;
+        private int laSize = 0;
 
         bool quit = false;
         bool firstRun = true;
@@ -39,7 +41,7 @@ namespace Dec
             Menu.AddString("hm - home (no args)\n");
             Menu.AddString("qt - quit (no arg)\n");
             Menu.AddString("sh - shift (1 arg)\n");
-
+            Menu.AddString("la - last (no args)\n");
 
             if (firstRun)
             {
@@ -61,11 +63,12 @@ namespace Dec
                 {
                     pathString.AddString(inputArray[i]);
                 }
-                userScope = userScope.PaveTo(pathString.ToString());
+                String pathString_VALUE = pathString.ToString();
+                userScope = userScope.Add(pathString_VALUE, ""); //short term patch
                 return "created";
             }
 
-            if (inputArray[0] == "64144")
+            else if (inputArray[0] == "hash")
             {
                 DecString hashed = new DecString();
                 for (int i = 1; i < inputArray.Length; i++)
@@ -73,8 +76,20 @@ namespace Dec
                     hashed.AddString(inputArray[i]);
                     hashed.AddString(" ");
                 }
-                Console.WriteLine(DecTree<String>.Hasher(hashed.ToString()));
+                Console.WriteLine(this.board.Hasher(0,hashed.ToString()));
                 return "ha.";
+            }
+
+            else if (inputArray[0] == "prime"){
+                //try
+                {
+                    Console.WriteLine(this.board.Prime(Int32.Parse(inputArray[1])));
+                }
+                //catch(NullReferenceException e)
+                {
+                    //e.ToString();
+                }
+                return "prime";
             }
 
             else if (inputArray[0] == "mv")
@@ -86,11 +101,12 @@ namespace Dec
                     {
                         addString.AddString(inputArray[i]);
                     }
-                    userScope = userScope.GoGet(addString.ToString());
+                    userScope = userScope.TGet(addString.ToString());
                     return "moved";
                 }
                 catch (NullReferenceException e)
                 {
+                    e.GetHashCode();
                 }
                 return "mv error";
             }
@@ -132,6 +148,7 @@ namespace Dec
                     }
                     catch (NullReferenceException e)
                     {
+                        e.GetHashCode();
                         return "Empty";
                     }
                 }
@@ -177,6 +194,21 @@ namespace Dec
                 return "invalid command.";
             }
         }
+
+        void focus(DecTree<string> newFocus)
+        {
+            la.Add(laSize++, newFocus);
+        }
+
+        DecTree<String> getLastFocus() => la.Get(laSize);
+
+        DecTree<String> move(String path)
+        {
+            la.Add(laSize++, userScope);
+            DecTree<String> retString = userScope.GoGet(path);
+            return retString;
+        }
+
         public static void run()
         {
             DecBoard<String> main = new DecBoard<String>();
