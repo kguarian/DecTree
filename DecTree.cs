@@ -1,50 +1,28 @@
 ﻿using System;
 using System.IO;
-using System.Text.Encodings;
-using System.Runtime.Serialization;
-using System.Xml.Serialization;
 
 namespace Dec
 {
-    [DataContractAttribute]
-    public class DecTree<E>
+        public class DecTree<E>
     {
-        [DataMemberAttribute]
         public DecTree<E> dt0;
-        [DataMemberAttribute]
         public DecTree<E> dt1;
-        [DataMemberAttribute]
         public DecTree<E> dt2;
-        [DataMemberAttribute]
         public DecTree<E> dt3;
-        [DataMemberAttribute]
         public DecTree<E> dt4;
-        [DataMemberAttribute]
         public DecTree<E> dt5;
-        [DataMemberAttribute]
         public DecTree<E> dt6;
-        [DataMemberAttribute]
         public DecTree<E> dt7;
-        [DataMemberAttribute]
         public DecTree<E> dt8;
-        [DataMemberAttribute]
         public DecTree<E> dt9;
-        [DataMemberAttribute]
         public DecTree<E> dtC;
-        [DataMemberAttribute]
         public DecTree<E> dtN;
-        [IgnoreDataMemberAttribute]
         public DecTree<E> dtP;
-        [DataMemberAttribute]
         public DecTree<long> primes;
-        [DataMemberAttribute]
         public E element = default(E);
 
-        [DataMemberAttribute]
         long type = 0;
-        [DataMemberAttribute]
         long counter = 0;
-        [DataMemberAttribute]
         long serializationCounter = 0;
 
         static int ZERO = 0;
@@ -335,50 +313,64 @@ namespace Dec
 
         public DecTree<E> GoGet(long address)
         {
-            DecTree<E> retTree = this;
-            DecTree<E> opTree = retTree;
+            try
+            {
+                DecTree<E> retTree = this;
+                DecTree<E> opTree = retTree;
 
-            if (address == 0)
-            {
-                return this;
+                if (address == 0)
+                {
+                    return this;
+                }
+                else if (address < 0)
+                {
+                    opTree = opTree.GetDecTree(NEGATIVE);
+                    address *= -1;
+                }
+                while (address > 0)
+                {
+                    int mod = (int)address % 10;
+                    address /= 10;
+                    opTree = opTree.GetDecTree(mod);
+                }
+                return opTree;
             }
-            else if (address < 0)
+            catch (NullReferenceException)
             {
-                opTree = opTree.GetDecTree(NEGATIVE);
-                address *= -1;
+                return default(DecTree<E>);
             }
-            while (address > 0)
-            {
-                int mod = (int)address % 10;
-                address /= 10;
-                opTree = opTree.GetDecTree(mod);
-            }
-            return opTree;
         }
 
         public DecTree<E> GoGet(String address)
         {
-            DecTree<E> retTree = this;
-            DecTree<E> opTree = retTree;
-
-            long longAddress = Hasher(0, address);
-
-            if (longAddress == 0)
+            try
             {
-                return this;
-            }
-            else if (longAddress < 0)
-            {
-                opTree = opTree.GetDecTree(NEGATIVE);
-                longAddress *= -1;
-            }
-            else while (longAddress > 0)
+                DecTree<E> retTree = this;
+                DecTree<E> opTree = retTree;
+
+                long longAddress = Hasher(0, address);
+
+                if (longAddress == 0)
                 {
-                    int mod = (int)longAddress % 10;
-                    longAddress /= 10;
-                    opTree = opTree.GetDecTree(mod);
+                    return this;
                 }
-            return opTree;
+                else if (longAddress < 0)
+                {
+                    opTree = opTree.GetDecTree(NEGATIVE);
+                    longAddress *= -1;
+                }
+                else while (longAddress > 0)
+                    {
+                        int mod = (int)longAddress % 10;
+                        longAddress /= 10;
+                        opTree = opTree.GetDecTree(mod);
+                    }
+                return opTree;
+            }
+            catch (NullReferenceException)
+            {
+                return default(DecTree<E>);
+            }
         }
 
         public DecTree<E> Add(E element)
@@ -443,7 +435,14 @@ namespace Dec
 
         public DecTree<E> TGet(String address)
         {
-            return this.GoGet(address).dtC;
+            try
+            {
+                return this.GoGet(address).dtC;
+            }
+            catch (NullReferenceException)
+            {
+                return default(DecTree<E>);
+            }
         }
 
         public E Get(long address)
@@ -478,7 +477,14 @@ namespace Dec
 
         public DecTree<E> TGet(long address)
         {
-            return this.PaveTo(address).dtC;
+            try
+            {
+                return this.PaveTo(address).dtC;
+            }
+            catch (NullReferenceException)
+            {
+                return default(DecTree<E>);
+            }
         }
 
         public bool Rm()
@@ -500,43 +506,69 @@ namespace Dec
 
         public bool Rm(long address)
         {
-            return this.GoGet(address).Rm();
+            try
+            {
+                return this.GoGet(address).Rm();
+            }
+            catch (NullReferenceException)
+            {
+                return false;
+            }
         }
 
         public bool Rm(String address)
         {
-            return this.Rm(Hasher(0, address));
+            try
+            {
+                return this.Rm(Hasher(0, address));
+            }
+            catch (NullReferenceException)
+            {
+                return false;
+            }
         }
 
         public bool RmL()
         {
-            DecTree<E> FocusTree = this;
-            DecTree<E> ChildTree;
-            if (FocusTree.dtC == null)
+            try
+            {
+                DecTree<E> FocusTree = this;
+                DecTree<E> ChildTree;
+                if (FocusTree.dtC == null)
+                {
+                    return false;
+                }
+                ChildTree = FocusTree.dtC;
+                while (ChildTree != null)
+                {
+                    ChildTree = ChildTree.dtC;
+                    FocusTree = FocusTree.dtC;
+                }
+                FocusTree.dtC = null;
+                counterDecrement();
+                return true;
+            }
+            catch (NullReferenceException)
             {
                 return false;
             }
-            ChildTree = FocusTree.dtC;
-            while (ChildTree != null)
-            {
-                ChildTree = ChildTree.dtC;
-                FocusTree = FocusTree.dtC;
-            }
-            FocusTree.dtC = null;
-            counterDecrement();
-            return true;
         }
 
         public bool RmL(long address)
         {
-            return this.PaveTo(address).RmL(address);
+            try
+            {
+                return this.GoGet(address).RmL();
+            }
+            catch (NullReferenceException)
+            {
+                return false;
+            }
         }
-
-
 
         public bool RmL(string address)
         {
-            return this.Rm(int.Parse(address));
+            return this.Rm(Hasher(0, address));
         }
 
 
@@ -665,13 +697,69 @@ namespace Dec
         public void Export(string path)
         {
             FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write);
-            string thisToString = this.ToString();
-            byte[] thisToString_byteArray = new byte[thisToString.Length];
-            for (int i = 0; i < thisToString.Length; i++)
+            DecTree<E>[] order = new DecTree<E>[] { dt0, dt1, dt2, dt3, dt4, dt5, dt6, dt7, dt8, dt9, dtC, dtN };
+            DecTree<DecTree<E>> referenceHolder = new DecTree<DecTree<E>>();
+            referenceHolder.Add(0, this);
+            foreach (DecTree<E> member in order)
             {
-                thisToString_byteArray[i] = (byte)thisToString[i];
+                if (member != null)
+                {
+                    referenceHolder.Add(++referenceHolder.counter, member);
+                    member.serializationCounter = referenceHolder.counter;
+                    member.CollectSubTrees(referenceHolder);
+                }
             }
-            fs.Write(thisToString_byteArray, 0, thisToString.Length);
+            for (int i = 0; i <= referenceHolder.counter; i++)
+            {
+                DecTree<E> currTree = referenceHolder.Get(i);
+                if (currTree.element == null)
+                {
+                    char[] nextline = $"{i}:\n".ToCharArray();
+                    byte[] nextline_bytes = new byte[nextline.Length];
+                    for (int j = 0; j < nextline.Length; j++)
+                    {
+                        nextline_bytes[j] = (byte)nextline[j];
+                    }
+                    fs.Write(nextline_bytes, 0, nextline.Length);
+                }
+                else
+                {
+                    char[] nextline = $"{i}:{currTree.element.ToString()}\n".ToCharArray();
+                    byte[] nextline_bytes = new byte[nextline.Length];
+                    for (int j = 0; j < nextline.Length; j++)
+                    {
+                        nextline_bytes[j] = (byte)nextline[j];
+                    }
+                    fs.Write(nextline_bytes, 0, nextline.Length);
+                }
+
+                order[0] = currTree.dt0;
+                order[1] = currTree.dt1;
+                order[2] = currTree.dt2;
+                order[3] = currTree.dt3;
+                order[4] = currTree.dt4;
+                order[5] = currTree.dt5;
+                order[6] = currTree.dt6;
+                order[7] = currTree.dt7;
+                order[8] = currTree.dt8;
+                order[9] = currTree.dt9;
+                order[10] = currTree.dtC;
+                order[11] = currTree.dtN;
+                for (int j = 0; j < order.Length; j++)
+                {
+                    if (order[j] != null)
+                    {
+                        char[] nextline = $"\t{j}:{order[j].serializationCounter}\n".ToCharArray();
+                        byte[] nextline_bytes = new byte[nextline.Length];
+                        for (int k = 0; k < nextline.Length; k++)
+                        {
+                            nextline_bytes[k] = (byte)nextline[k];
+                        }
+                        fs.Write(nextline_bytes, 0, nextline.Length);
+
+                    }
+                }
+            }
             fs.Dispose();
         }
 
