@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ridea\\Documents\\HOME\\coding\\DecTree\\DecTree.csproj": {}
+    "C:\\Users\\ridea\\Documents\\HOME\\coding\\c#\\DecTree\\DecTree.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ridea\\Documents\\HOME\\coding\\DecTree\\DecTree.csproj": {
+    "C:\\Users\\ridea\\Documents\\HOME\\coding\\c#\\DecTree\\DecTree.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ridea\\Documents\\HOME\\coding\\DecTree\\DecTree.csproj",
+        "projectUniqueName": "C:\\Users\\ridea\\Documents\\HOME\\coding\\c#\\DecTree\\DecTree.csproj",
         "projectName": "DecTree",
-        "projectPath": "C:\\Users\\ridea\\Documents\\HOME\\coding\\DecTree\\DecTree.csproj",
+        "projectPath": "C:\\Users\\ridea\\Documents\\HOME\\coding\\c#\\DecTree\\DecTree.csproj",
         "packagesPath": "C:\\Users\\ridea\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ridea\\Documents\\HOME\\coding\\DecTree\\obj\\",
+        "outputPath": "C:\\Users\\ridea\\Documents\\HOME\\coding\\c#\\DecTree\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Microsoft\\Xamarin\\NuGet\\"
@@ -30,6 +30,7 @@
         },
         "frameworks": {
           "netcoreapp3.1": {
+            "targetAlias": "netcoreapp3.1",
             "projectReferences": {}
           }
         },
@@ -41,6 +42,7 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
+          "targetAlias": "netcoreapp3.1",
           "imports": [
             "net461",
             "net462",
@@ -56,7 +58,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.402\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }

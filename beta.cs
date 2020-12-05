@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text.Encodings;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
-namespace Dec
+namespace beta
 {
     [DataContractAttribute]
     public class DecTree<E>
@@ -590,21 +590,6 @@ namespace Dec
             return primes.Get(index);
         }
 
-        private DecTree<DecTree<E>> CollectSubTrees(DecTree<DecTree<E>> referenceHolder)
-        {
-            DecTree<E>[] order = new DecTree<E>[] { dt0, dt1, dt2, dt3, dt4, dt5, dt6, dt7, dt8, dt9, dtC, dtN };
-            foreach (DecTree<E> member in order)
-            {
-                if (member != null)
-                {
-                    referenceHolder.Add(++referenceHolder.counter, member);
-                    member.serializationCounter = referenceHolder.counter;
-                    member.CollectSubTrees(referenceHolder);
-                }
-            }
-            return referenceHolder;
-        }
-
         /// <summary>
         /// OUTPUT FORMAT:
         /// $"[{DecTree Index}] : <{element.ToString()}>\n"
@@ -612,7 +597,6 @@ namespace Dec
         /// </summary>
         /// <returns></returns>
         public override string ToString()
-        //If you make changes, ensure that you amend FromString
         {
             DecString retString = new DecString();
             DecTree<E>[] order = new DecTree<E>[] { dt0, dt1, dt2, dt3, dt4, dt5, dt6, dt7, dt8, dt9, dtC, dtN };
@@ -630,14 +614,7 @@ namespace Dec
             for (int i = 0; i <= referenceHolder.counter; i++)
             {
                 DecTree<E> currTree = referenceHolder.Get(i);
-                if (currTree.element == null)
-                {
-                    retString.AddString($"{i}:\n");
-                }
-                else
-                {
-                    retString.AddString($"{i}:{currTree.element.ToString()}\n");
-                }
+                retString.AddString($"{i}: <{(currTree.element != null ? currTree.element.ToString() : "null")}>\n");
 
                 order[0] = currTree.dt0;
                 order[1] = currTree.dt1;
@@ -655,215 +632,283 @@ namespace Dec
                 {
                     if (order[j] != null)
                     {
-                        retString.AddString($"\t{j}:{order[j].serializationCounter}\n");
+                        retString.AddString($"\t{j}: {order[j].serializationCounter}\n");
                     }
                 }
             }
             return retString.ToString();
         }
 
-        public void Export(string path)
+        private DecTree<DecTree<E>> CollectSubTrees(DecTree<DecTree<E>> referenceHolder)
         {
-            FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write);
-            string thisToString = this.ToString();
-            byte[] thisToString_byteArray = new byte[thisToString.Length];
-            for (int i = 0; i < thisToString.Length; i++)
+            DecTree<E>[] order = new DecTree<E>[] { dt0, dt1, dt2, dt3, dt4, dt5, dt6, dt7, dt8, dt9, dtC, dtN };
+            foreach (DecTree<E> member in order)
             {
-                thisToString_byteArray[i] = (byte)thisToString[i];
+                if (member != null)
+                {
+                    referenceHolder.Add(++referenceHolder.counter, member);
+                    member.serializationCounter = referenceHolder.counter;
+                    member.CollectSubTrees(referenceHolder);
+                }
             }
-            fs.Write(thisToString_byteArray, 0, thisToString.Length);
-            fs.Dispose();
+            return referenceHolder;
         }
 
-        public static DecTree<string> Import(string path)
+        //procedure sequence: DecTreeNav:
+        public DecTree<E> shift(char c)
         {
-            DecTree<DecTree<string>> holderTree = new DecTree<DecTree<string>>();
-
-            StreamReader sr = new StreamReader(path);
-            DecString ds = new DecString();
-            string nextLine = sr.ReadLine();
-            long index = -1;
-            while (nextLine != null)
+            DecTree<E> inFocus = this;
+            return c switch
             {
-                if (nextLine[0] == '\t')
-                //First pass. Must read in all DecTrees before it makes sense to pass references to them.
-                {
-                    nextLine = sr.ReadLine();
-                    continue;
-                }
-                else
-                /*The only other case is for the line to begin with an index.
-                The procedure is to read the index, read the element, store 
-                a DecTree containing the element.*/
-                {
-                    int i = 0;
-                    for (; nextLine[i] > 0x2f && nextLine[i] < 0x3a; i++)
-                    {
-                        ds.AddChar(nextLine[i]);
-                    }
-                    index = Int64.Parse(ds.ToString());
-                    ds.Clear();
-                    i++; //to avoid the colon
-                    for (; i < nextLine.Length; i++)
-                    {
-                        ds.AddChar(nextLine[i]);
-                    }
-                    string element = ds.ToString();
-                    ds.Clear();
+                '0' => inFocus.dt0,
+                '1' => inFocus.dt1,
+                '2' => inFocus.dt2,
+                '3' => inFocus.dt3,
+                '4' => inFocus.dt4,
+                '5' => inFocus.dt5,
+                '6' => inFocus.dt6,
+                '7' => inFocus.dt7,
+                '8' => inFocus.dt8,
+                '9' => inFocus.dt9,
+                'c' => inFocus.dtC,
+                'n' => inFocus.dtN,
+                'p' => inFocus.dtP,
+                _ => null,
+            };
+        }
 
-                    holderTree.Add(index, new DecTree<string>(element));
-                }
-                nextLine = sr.ReadLine();
-                //repeat for each line.
-            }
-
-            sr.Close();
-            sr = new StreamReader(path);
-            //close then reopen the file so we can read agan from beginning.
-            nextLine = sr.ReadLine();
-            DecTree<string> currDecTree;
-            index = -1;
-            while (nextLine != null)
+        public DecTree<E> Move(String path)
+        {
+            DecTree<E> opTree = this;
+            for (int i = 0; i < path.Length; i++)
             {
-                if (nextLine[0] == '\t')
-                /*here, we do the references.
-                The approach is as follows:
-                the index is already set from the else case.
-                We get the tree with that index, find the identities
-                of the subordinate DecTrees, and properly assign
-                the references according to {0-9 : dt0-dt9, 10->dtC,
-                11->dtN*/
-                {
-                    currDecTree = holderTree.Get(index);
-                    if (nextLine[1] == '0')
-                    {
-                        for (int i = 3; i < nextLine.Length; i++)
-                        {
-                            ds.AddChar(nextLine[i]);
-                        }
-                        currDecTree.dt0 = holderTree.Get(Int64.Parse(ds.ToString()));
-                        ds.Clear();
-                    }
-                    else if (nextLine[1] == '1')
-                    {
-                        if (nextLine[2] == ':')
-                        {
-                            for (int i = 3; i < nextLine.Length; i++)
-                            {
-                                ds.AddChar(nextLine[i]);
-                            }
-                            currDecTree.dt1 = holderTree.Get(Int64.Parse(ds.ToString()));
-                            ds.Clear();
-                        }
-                        if (nextLine[2] == '0')
-                        {
-                            for (int i = 4; i < nextLine.Length; i++)
-                            {
-                                ds.AddChar(nextLine[i]);
-                            }
-                            currDecTree.dtC = holderTree.Get(Int64.Parse(ds.ToString()));
-                            ds.Clear();
-                        }
-                        else if (nextLine[2] == '1')
-                        {
-                            for (int i = 4; i < nextLine.Length; i++)
-                            {
-                                ds.AddChar(nextLine[i]);
-                            }
-                            currDecTree.dtN = holderTree.Get(Int64.Parse(ds.ToString()));
-                            ds.Clear();
-                        }
-                    }
-                    else if (nextLine[1] == '2')
-                    {
-                        for (int i = 3; i < nextLine.Length; i++)
-                        {
-                            ds.AddChar(nextLine[i]);
-                        }
-                        currDecTree.dt2 = holderTree.Get(Int64.Parse(ds.ToString()));
-                        ds.Clear();
-                    }
-                    else if (nextLine[1] == '3')
-                    {
-                        for (int i = 3; i < nextLine.Length; i++)
-                        {
-                            ds.AddChar(nextLine[i]);
-                        }
-                        currDecTree.dt3 = holderTree.Get(Int64.Parse(ds.ToString()));
-                        ds.Clear();
-                    }
-                    else if (nextLine[1] == '4')
-                    {
-                        for (int i = 3; i < nextLine.Length; i++)
-                        {
-                            ds.AddChar(nextLine[i]);
-                        }
-                        currDecTree.dt4 = holderTree.Get(Int64.Parse(ds.ToString()));
-                        ds.Clear();
-                    }
-                    else if (nextLine[1] == '5')
-                    {
-                        for (int i = 3; i < nextLine.Length; i++)
-                        {
-                            ds.AddChar(nextLine[i]);
-                        }
-                        currDecTree.dt5 = holderTree.Get(Int64.Parse(ds.ToString()));
-                        ds.Clear();
-                    }
-                    else if (nextLine[1] == '6')
-                    {
-                        for (int i = 3; i < nextLine.Length; i++)
-                        {
-                            ds.AddChar(nextLine[i]);
-                        }
-                        currDecTree.dt6 = holderTree.Get(Int64.Parse(ds.ToString()));
-                        ds.Clear();
-                    }
-                    else if (nextLine[1] == '7')
-                    {
-                        for (int i = 3; i < nextLine.Length; i++)
-                        {
-                            ds.AddChar(nextLine[i]);
-                        }
-                        currDecTree.dt7 = holderTree.Get(Int64.Parse(ds.ToString()));
-                        ds.Clear();
-                    }
-                    else if (nextLine[1] == '8')
-                    {
-                        for (int i = 3; i < nextLine.Length; i++)
-                        {
-                            ds.AddChar(nextLine[i]);
-                        }
-                        currDecTree.dt8 = holderTree.Get(Int64.Parse(ds.ToString()));
-                        ds.Clear();
-                    }
-                    else if (nextLine[1] == '9')
-                    {
-                        for (int i = 3; i < nextLine.Length; i++)
-                        {
-                            ds.AddChar(nextLine[i]);
-                        }
-                        currDecTree.dt9 = holderTree.Get(Int64.Parse(ds.ToString()));
-                        ds.Clear();
-                    }
-                }
-                else
-                //parse for index, find it, store in index variable.
-                {
-                    int i = 0;
-                    for (; nextLine[i] > 0x2f && nextLine[i] < 0x3a; i++)
-                    {
-                        ds.AddChar(nextLine[i]);
-                    }
-                    index = Int64.Parse(ds.ToString());
-                    ds.Clear();
-                }
-                nextLine = sr.ReadLine();
+                opTree = opTree.shift(path[i]);
             }
-            sr.Dispose();
-            return holderTree.Get(0);
-            /*return *.Get(0) because the base tree has id 0.
-            It's an axiom.*/
+            return opTree;
         }
     }
+
+    class Tests
+    {
+        DecTree<long> TestTree = new DecTree<long>();
+        public bool TestAdd()
+        {
+            for (long i = 0; i < 999; i++)
+            {
+                TestTree.Add(i, i);
+            }
+            for (long i = 0; i < 999; i++)
+            {
+                if (TestTree.Get(i) != i)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public long TestHasher(String input)
+        {
+            return TestTree.Hasher(0, input);
+        }
+
+        public long TestPrime(long index)
+        {
+            DecTree<object> dtString = new DecTree<object>();
+            return TestTree.Prime(index);
+        }
+
+        public static String tests()
+        {
+            //Tests FileWriter and records ToString() method
+            DecTree<String> tsTree = new DecTree<String>();
+            int upperbound = int.Parse(Prompt("Test Size"));
+            for (int i = 0; i < upperbound; i++)
+            {
+                tsTree.Add(i, i.ToString());
+            }
+            String retString = tsTree.ToString();
+            FileWriter<String> fw = new FileWriter<String>(tsTree);
+            fw.Write("C:\\Users\\ridea\\Documents\\HOME\\coding\\DecTree\\DecTree.log", tsTree.ToString());
+            return retString;
+        }
+
+        public static String Prompt(String prompt)
+        {
+            Console.Write(prompt + ": ");
+            String retString = Console.ReadLine();
+            Console.WriteLine();
+            return retString;
+        }
+
+        static void HasherCrash(String test)
+        {
+
+        }
+    }
+
+    class Pair<E>
+    {
+        object[] pair = new object[2];
+        public Pair(DecTree<E> tree, int index)
+        {
+            pair[0] = tree;
+            pair[1] = index;
+        }
+
+        public object[] get => pair;
+    }
+
+    class XMLSerializer<E>
+    {
+        public void Write(E subject, string fileName)
+        //https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/serialization/how-to-write-object-data-to-an-xml-file
+        {
+            FileStream writer = new FileStream(fileName, FileMode.Append);
+            System.Xml.Serialization.XmlSerializer ser =
+                new System.Xml.Serialization.XmlSerializer(typeof(E));
+
+            ser.Serialize(writer, subject);
+            writer.Close();
+        }
+
+        public E Read(string fileName)
+        //https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/serialization/how-to-read-object-data-from-an-xml-file
+        {
+            System.Xml.Serialization.XmlSerializer reader =
+        new System.Xml.Serialization.XmlSerializer(typeof(E));
+            System.IO.StreamReader file = new System.IO.StreamReader(fileName);
+            E retObject = (E)reader.Deserialize(file);
+            file.Close();
+            return retObject;
+        }
+    }
+
+    public delegate string Del_x_string(); //delegateP: no args to string
+
+    class FileWriter<E>{
+        Del_x_string toStringAsync;
+        DecTree<E> operand;
+        public FileWriter(DecTree<E> operand){
+            this.operand = operand;
+            toStringAsync = new Del_x_string(operand.ToString);
+        }
+        public void Write(String filename, String content)
+        {
+            //https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/file-system/how-to-write-to-a-text-file
+            using (Stream s = new FileStream(filename + ".decT", FileMode.Create))
+            {
+                s.Write(System.Text.Encoding.Unicode.GetBytes(content));
+                s.Close();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Developers get freedom here. Swap out "chars" with something else if you want, but the <methodname>Stable</methodname>
+    /// </summary>
+    class DecString
+    {
+        private DecTree<char> chars;
+        private int Length;
+        //standard string length.
+        private bool open = true;
+
+        public DecString()
+        {
+            chars = new DecTree<char>();
+            Length = 0;
+        }
+
+        public void AddChar(char c)
+        {
+            if(open){
+                chars.Add(Length++, c);
+            }
+        }
+
+        public char GetChar(int index){
+            if(index > -1 && index < Length){
+                return chars.Get(Length);
+            }
+            else{
+                return (char) 0;
+            }
+        }
+
+        public void AddString(String starter)
+        {
+            for (int i = 0; i < starter.Length; i++)
+            {
+                AddChar(starter[i]);
+            }
+        }
+
+        public DecString(String init)
+        {
+            chars = new DecTree<char>();
+            Length = 0;
+            this.AddString(init);
+        }
+
+        public override String ToString()
+        {
+            char[] allChars = new char[this.Length];
+            for (int i = 0; i < this.Length; i++)
+            {
+                allChars[i] = chars.Get(i);
+            }
+            return (new string(allChars));
+        }
+
+        /// <summary>
+        /// splits strings by space characters, stores each splice in a
+        /// child DecTree, stores it at the next available index--INDEXING
+        /// STARTS AT ZERO, increments by +1.
+        /// </summary>
+        /// <param name="input">the string to be split.</param>
+        /// <returns></returns>
+        public static DecTree<DecString> Split(string input){
+
+            if(input.Length == 0){
+                DecTree<DecString> r_tree = new DecTree<DecString>();
+                r_tree.Add(1, new DecString("\0"));
+                return r_tree;
+            }
+
+            int stringIndex = 0;
+            int charCounter = 0;
+
+            DecTree<DecString> r_tree1 = new DecTree<DecString>();
+            DecString opDString = new DecString();
+            while(charCounter<input.Length){
+                opDString.AddChar(input[charCounter]);
+                charCounter++;
+                if(input[charCounter]==' '){
+                    r_tree1.Add(stringIndex++, opDString);
+                    //indexing starts at 0 for this reason.
+                    opDString = new DecString();
+                    stringIndex = 0;
+                }
+            }
+            if(input[input.Length-1]!=' '){
+                r_tree1.Add(stringIndex, opDString);
+            }
+            return r_tree1;
+        }
+
+        #pragma warning disable 168
+        public bool Stable(){
+            try{
+                for (int i = 0; i < this.Length; i++){
+                    this.GetChar(i);
+                }
+                return true;
+            } catch (Exception e){
+                return false;
+            }
+        }
+        #pragma warning restore 168
+    }
+    //cursor rest point
 }
