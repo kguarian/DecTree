@@ -3,8 +3,9 @@ using System.IO;
 
 namespace Dec
 {
-        public class DecTree<E>
+    public class DecTree<E>
     {
+
         public DecTree<E> dt0;
         public DecTree<E> dt1;
         public DecTree<E> dt2;
@@ -22,7 +23,7 @@ namespace Dec
         public E element = default(E);
 
         long type = 0;
-        long counter = 0;
+        public long counter = 0;
         long serializationCounter = 0;
 
         static int ZERO = 0;
@@ -622,7 +623,7 @@ namespace Dec
             return primes.Get(index);
         }
 
-        private DecTree<DecTree<E>> CollectSubTrees(DecTree<DecTree<E>> referenceHolder)
+        DecTree<DecTree<E>> CollectSubTrees(DecTree<DecTree<E>> referenceHolder)
         {
             DecTree<E>[] order = new DecTree<E>[] { dt0, dt1, dt2, dt3, dt4, dt5, dt6, dt7, dt8, dt9, dtC, dtN };
             foreach (DecTree<E> member in order)
@@ -635,6 +636,20 @@ namespace Dec
                 }
             }
             return referenceHolder;
+        }
+
+        /// <summary>
+        /// Just counts from 0 until exception, upwards
+        /// </summary>
+        /// <returns>the count</returns>
+        public long Length(){
+            for (long i = 0; true; i++){
+                try{
+                    this.Get(i);
+                } catch (NullReferenceException){
+                    return i;
+                }
+            }
         }
 
         /// <summary>
@@ -953,5 +968,140 @@ namespace Dec
             /*return *.Get(0) because the base tree has id 0.
             It's an axiom.*/
         }
+    }
+    /// <summary>
+    /// Mutable DecTree Variant of String
+    /// </summary>
+    class DecString
+    {
+        private DecTree<char> chars;
+        private int Length;
+        //standard string length.
+        private bool open = true;
+
+        public DecString()
+        {
+            chars = new DecTree<char>();
+            Length = 0;
+        }
+
+        public void AddChar(char c)
+        {
+            if (open)
+            {
+                chars.Add(Length++, c);
+            }
+        }
+
+        public char GetChar(int index)
+        {
+            if (index > -1 && index < Length)
+            {
+                return chars.Get(Length);
+            }
+            else
+            {
+                return (char)0;
+            }
+        }
+
+        public void AddString(String starter)
+        {
+            for (int i = 0; i < starter.Length; i++)
+            {
+                AddChar(starter[i]);
+            }
+        }
+
+        public void AddString(DecString starter)
+        {
+            long starter_length = starter.chars.Length();
+            for (long i = 0; i < starter_length; i++)
+            {
+                AddChar(starter.chars.Get(i));
+            }
+        }
+
+        public DecString(String init)
+        {
+            chars = new DecTree<char>();
+            Length = 0;
+            this.AddString(init);
+        }
+
+        public override String ToString()
+        {
+            char[] allChars = new char[this.Length];
+            for (int i = 0; i < this.Length; i++)
+            {
+                allChars[i] = chars.Get(i);
+            }
+            return (new string(allChars));
+        }
+
+        public void Clear()
+        {
+            chars = new DecTree<char>();
+            Length = 0;
+        }
+
+        /// <summary>
+        /// splits strings by space characters, stores each splice in a
+        /// child DecTree, stores it at the next available index--INDEXING
+        /// STARTS AT ZERO, increments by +1.
+        /// </summary>
+        /// <param name="input">the string to be split.</param>
+        /// <returns></returns>
+        public static DecTree<DecString> Split(string input)
+        {
+
+            if (input.Length == 0)
+            {
+                DecTree<DecString> r_tree = new DecTree<DecString>();
+                r_tree.Add(1, new DecString("\0"));
+                return r_tree;
+            }
+
+            int stringIndex = 0;
+            int charCounter = 0;
+
+            DecTree<DecString> r_tree1 = new DecTree<DecString>();
+            DecString opDString = new DecString();
+            while (charCounter < input.Length)
+            {
+                opDString.AddChar(input[charCounter]);
+                charCounter++;
+                if (input[charCounter] == ' ')
+                {
+                    r_tree1.Add(stringIndex++, opDString);
+                    //indexing starts at 0 for this reason.
+                    opDString = new DecString();
+                    stringIndex = 0;
+                }
+            }
+            if (input[input.Length - 1] != ' ')
+            {
+                r_tree1.Add(stringIndex, opDString);
+            }
+            return r_tree1;
+        }
+
+#pragma warning disable 168
+        public bool Stable()
+        {
+            try
+            {
+                for (int i = 0; i < this.Length; i++)
+                {
+                    this.GetChar(i);
+                }
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+#pragma warning restore 168
     }
 }
