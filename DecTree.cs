@@ -374,59 +374,31 @@ namespace Dec
             }
         }
 
-        public DecTree<E> Add(E element)
+        public DecPair<E> Add(E element)
         {
             DecTree<E> opTree = this;
-            if (opTree.dtC == null)
+            DecPair<E> retPair = new DecPair<E>();
+            retPair.Depth = 0;
+            while (opTree.dtC != null)
             {
-                opTree = opTree.MakeDecTree(CHILD);
-                opTree.element = element;
-                return opTree;
+                opTree = opTree.dtC;
+                retPair.Depth++;
+
             }
-            else
-            {
-                DecTree<E> nextInChain = opTree.dtC;
-                opTree.dtC = default(DecTree<E>);
-                opTree = opTree.MakeDecTree(CHILD);
-                opTree.element = element;
-                opTree.dtC = nextInChain;
-                nextInChain.dtP = opTree;
-                return opTree;
-            }
+            opTree.dtC = new DecTree<E>(CHILD);
+            opTree.dtC.element = element;
+            retPair.Tree = opTree;
+            return retPair;
         }
 
-        public DecTree<E> Add(long address, E element)
+        public DecPair<E> Add(long address, E element)
         {
             return this.PaveTo(address).Add(element);
         }
 
-        public DecTree<E> Add(string address, E element)
+        public DecPair<E> Add(string address, E element)
         {
             return this.PaveTo(Hasher(0, address)).Add(element);
-        }
-
-        //<>Section<>
-
-        public DecTree<E> AddL(E element)
-        {
-            DecTree<E> opTree = this;
-            while (opTree.dtC != null)
-            {
-                opTree = opTree.dtC;
-            }
-            opTree = opTree.Add(element);
-            return opTree;
-        }
-
-        public DecTree<E> AddL(long address, E element)
-        {
-            DecTree<E> opTree = this.PaveTo(address);
-            return opTree.AddL(element);
-        }
-        public DecTree<E> AddL(string address, E element)
-        {
-            DecTree<E> opTree = this.PaveTo(Hasher(0, address));
-            return opTree.AddL(element);
         }
 
         public E Get()
@@ -499,6 +471,7 @@ namespace Dec
             {
                 this.dtC = null;
                 this.element = default(E);
+                return true;
             }
             {
                 return false;
@@ -567,11 +540,6 @@ namespace Dec
             }
         }
 
-        public bool RmL(string address)
-        {
-            return this.Rm(Hasher(0, address));
-        }
-
 
         public long Hasher(long zero, string tag)
         {
@@ -623,7 +591,7 @@ namespace Dec
             return primes.Get(index);
         }
 
-        DecTree<DecTree<E>> CollectSubTrees(DecTree<DecTree<E>> referenceHolder)
+        public DecTree<DecTree<E>> CollectSubTrees(DecTree<DecTree<E>> referenceHolder)
         {
             DecTree<E>[] order = new DecTree<E>[] { dt0, dt1, dt2, dt3, dt4, dt5, dt6, dt7, dt8, dt9, dtC, dtN };
             foreach (DecTree<E> member in order)
@@ -642,11 +610,16 @@ namespace Dec
         /// Just counts from 0 until exception, upwards
         /// </summary>
         /// <returns>the count</returns>
-        public long Length(){
-            for (long i = 0; true; i++){
-                try{
+        public long Length()
+        {
+            for (long i = 0; true; i++)
+            {
+                try
+                {
                     this.Get(i);
-                } catch (NullReferenceException){
+                }
+                catch (NullReferenceException)
+                {
                     return i;
                 }
             }
@@ -776,6 +749,201 @@ namespace Dec
                 }
             }
             fs.Dispose();
+        }
+
+        /**
+            Imports from file, but converts all types from string to I using reference object's FromString method.
+            Object must implement IDecConvertible (just means that it must have ToString and FromString methods as specified).    
+        **/
+        public static DecTree<object> Import(string path, ConvertibleObject refObject)
+        {
+            DecTree<DecTree<object>> holderTree = new DecTree<DecTree<object>>();
+
+            StreamReader sr = new StreamReader(path);
+            DecString ds = new DecString();
+            string nextLine = sr.ReadLine();
+            long index = -1;
+            while (nextLine != null)
+            {
+                if (nextLine[0] == '\t')
+                //First pass. Must read in all DecTrees before it makes sense to pass references to them.
+                {
+                    nextLine = sr.ReadLine();
+                    continue;
+                }
+                else
+                /*The only other case is for the line to begin with an index.
+                The procedure is to read the index, read the element, store 
+                a DecTree containing the element.*/
+                {
+                    int i = 0;
+                    for (; nextLine[i] > 0x2f && nextLine[i] < 0x3a; i++)
+                    {
+                        ds.AddChar(nextLine[i]);
+                    }
+                    index = Int64.Parse(ds.ToString());
+                    ds.Clear();
+                    i++; //to avoid the colon
+                    for (; i < nextLine.Length; i++)
+                    {
+                        ds.AddChar(nextLine[i]);
+                    }
+                    string element = ds.ToString();
+                    ds.Clear();
+
+                    holderTree.Add(index, new DecTree<object>(refObject.FromString(element)));
+                }
+                nextLine = sr.ReadLine();
+                //repeat for each line.
+            }
+
+            sr.Close();
+            sr = new StreamReader(path);
+            //close then reopen the file so we can read agan from beginning.
+            nextLine = sr.ReadLine();
+            DecTree<object> currDecTree;
+            index = -1;
+            while (nextLine != null)
+            {
+                if (nextLine[0] == '\t')
+                /*here, we do the references.
+                The approach is as follows:
+                the index is already set from the else case.
+                We get the tree with that index, find the identities
+                of the subordinate DecTrees, and properly assign
+                the references according to {0-9 : dt0-dt9, 10->dtC,
+                11->dtN*/
+                {
+                    currDecTree = holderTree.Get(index);
+                    if (nextLine[1] == '0')
+                    {
+                        for (int i = 3; i < nextLine.Length; i++)
+                        {
+                            ds.AddChar(nextLine[i]);
+                        }
+                        currDecTree.dt0 = holderTree.Get(Int64.Parse(ds.ToString()));
+                        ds.Clear();
+                    }
+                    else if (nextLine[1] == '1')
+                    {
+                        if (nextLine[2] == ':')
+                        {
+                            for (int i = 3; i < nextLine.Length; i++)
+                            {
+                                ds.AddChar(nextLine[i]);
+                            }
+                            currDecTree.dt1 = holderTree.Get(Int64.Parse(ds.ToString()));
+                            ds.Clear();
+                        }
+                        if (nextLine[2] == '0')
+                        {
+                            for (int i = 4; i < nextLine.Length; i++)
+                            {
+                                ds.AddChar(nextLine[i]);
+                            }
+                            currDecTree.dtC = holderTree.Get(Int64.Parse(ds.ToString()));
+                            ds.Clear();
+                        }
+                        else if (nextLine[2] == '1')
+                        {
+                            for (int i = 4; i < nextLine.Length; i++)
+                            {
+                                ds.AddChar(nextLine[i]);
+                            }
+                            currDecTree.dtN = holderTree.Get(Int64.Parse(ds.ToString()));
+                            ds.Clear();
+                        }
+                    }
+                    else if (nextLine[1] == '2')
+                    {
+                        for (int i = 3; i < nextLine.Length; i++)
+                        {
+                            ds.AddChar(nextLine[i]);
+                        }
+                        currDecTree.dt2 = holderTree.Get(Int64.Parse(ds.ToString()));
+                        ds.Clear();
+                    }
+                    else if (nextLine[1] == '3')
+                    {
+                        for (int i = 3; i < nextLine.Length; i++)
+                        {
+                            ds.AddChar(nextLine[i]);
+                        }
+                        currDecTree.dt3 = holderTree.Get(Int64.Parse(ds.ToString()));
+                        ds.Clear();
+                    }
+                    else if (nextLine[1] == '4')
+                    {
+                        for (int i = 3; i < nextLine.Length; i++)
+                        {
+                            ds.AddChar(nextLine[i]);
+                        }
+                        currDecTree.dt4 = holderTree.Get(Int64.Parse(ds.ToString()));
+                        ds.Clear();
+                    }
+                    else if (nextLine[1] == '5')
+                    {
+                        for (int i = 3; i < nextLine.Length; i++)
+                        {
+                            ds.AddChar(nextLine[i]);
+                        }
+                        currDecTree.dt5 = holderTree.Get(Int64.Parse(ds.ToString()));
+                        ds.Clear();
+                    }
+                    else if (nextLine[1] == '6')
+                    {
+                        for (int i = 3; i < nextLine.Length; i++)
+                        {
+                            ds.AddChar(nextLine[i]);
+                        }
+                        currDecTree.dt6 = holderTree.Get(Int64.Parse(ds.ToString()));
+                        ds.Clear();
+                    }
+                    else if (nextLine[1] == '7')
+                    {
+                        for (int i = 3; i < nextLine.Length; i++)
+                        {
+                            ds.AddChar(nextLine[i]);
+                        }
+                        currDecTree.dt7 = holderTree.Get(Int64.Parse(ds.ToString()));
+                        ds.Clear();
+                    }
+                    else if (nextLine[1] == '8')
+                    {
+                        for (int i = 3; i < nextLine.Length; i++)
+                        {
+                            ds.AddChar(nextLine[i]);
+                        }
+                        currDecTree.dt8 = holderTree.Get(Int64.Parse(ds.ToString()));
+                        ds.Clear();
+                    }
+                    else if (nextLine[1] == '9')
+                    {
+                        for (int i = 3; i < nextLine.Length; i++)
+                        {
+                            ds.AddChar(nextLine[i]);
+                        }
+                        currDecTree.dt9 = holderTree.Get(Int64.Parse(ds.ToString()));
+                        ds.Clear();
+                    }
+                }
+                else
+                //parse for index, find it, store in index variable.
+                {
+                    int i = 0;
+                    for (; nextLine[i] > 0x2f && nextLine[i] < 0x3a; i++)
+                    {
+                        ds.AddChar(nextLine[i]);
+                    }
+                    index = Int64.Parse(ds.ToString());
+                    ds.Clear();
+                }
+                nextLine = sr.ReadLine();
+            }
+            sr.Dispose();
+            return holderTree.Get(0);
+            /*return *.Get(0) because the base tree has id 0.
+            It's an axiom.*/
         }
 
         public static DecTree<string> Import(string path)
@@ -975,9 +1143,9 @@ namespace Dec
     class DecString
     {
         private DecTree<char> chars;
-        private int Length;
+        private long Length;
         //standard string length.
-        private bool open = true;
+        public static char EndOfLine = '\uffff';
 
         public DecString()
         {
@@ -987,9 +1155,21 @@ namespace Dec
 
         public void AddChar(char c)
         {
-            if (open)
+            chars.Add(Length++, c);
+        }
+
+        /*
+        
+        */
+        public void RmChar()
+        {
+            if (Length == 0)
             {
-                chars.Add(Length++, c);
+                return;
+            }
+            else
+            {
+                chars.Rm(--Length);
             }
         }
 
@@ -997,11 +1177,11 @@ namespace Dec
         {
             if (index > -1 && index < Length)
             {
-                return chars.Get(Length);
+                return chars.Get(index);
             }
             else
             {
-                return (char)0;
+                return EndOfLine;
             }
         }
 
@@ -1089,19 +1269,55 @@ namespace Dec
 #pragma warning disable 168
         public bool Stable()
         {
-            try
-            {
-                for (int i = 0; i < this.Length; i++)
-                {
-                    this.GetChar(i);
-                }
-                return true;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
+            return (chars.Length() == this.Length);
         }
 #pragma warning restore 168
+    }
+    class DecTime : ConvertibleObject
+    {
+        DateTime actualDate;
+
+        public DecTime(DateTime present)
+        {//because this is a wrapper class
+            actualDate = present;
+        }
+
+        public override DecTime FromString(string input)
+        {
+            if (input == "")
+                return null;
+
+            return new DecTime(DateTime.Parse(input));
+        }
+        public static DecTime Parse(string input)
+        {
+            return new DecTime(DateTime.Parse(input));
+        }
+
+        public override string ToString()
+        {
+            return actualDate.ToString();
+        }
+
+        public static DecTime Convert(DateTime present)
+        {//another wrapping joke
+            return new DecTime(present);
+        }
+
+    }
+    public struct DecPair<E>
+    {
+        public static implicit operator DecTree<E>(DecPair<E> subject) { return subject.Tree; }
+        public DecTree<E> Tree { get; set; }
+        public int Depth { get; set; }
+    }
+
+    public abstract class ConvertibleObject
+    {
+        DecTree<object> fields;
+
+        public abstract override string ToString();
+
+        public abstract ConvertibleObject FromString(string convertedValue);
     }
 }
