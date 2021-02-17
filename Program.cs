@@ -15,6 +15,9 @@ namespace Dec
                 dbComponent.Add(i, blocklistFileContents[i]);
             }
             dbComponent.Export("newfile.dec");
+
+            DecTree<string> readin = DecTree<string>.Import("newfile.dec");
+            Console.WriteLine("Finished!");
         }
     }
 }

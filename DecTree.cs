@@ -6,19 +6,9 @@ namespace Dec
     public class DecTree<E>
     {
 
-        public DecTree<E> dt0;
-        public DecTree<E> dt1;
-        public DecTree<E> dt2;
-        public DecTree<E> dt3;
-        public DecTree<E> dt4;
-        public DecTree<E> dt5;
-        public DecTree<E> dt6;
-        public DecTree<E> dt7;
-        public DecTree<E> dt8;
-        public DecTree<E> dt9;
-        public DecTree<E> dtC;
-        public DecTree<E> dtN;
-        public DecTree<E> dtP;
+        public DecTree<E> dt0, dt1, dt2,
+        dt3, dt4, dt5, dt6, dt7, dt8, dt9,
+        dtN, dtC, dtP;
         public DecTree<long> primes;
         public E element = default(E);
 
@@ -39,7 +29,7 @@ namespace Dec
         static int NEGATIVE = -1;
         static int CHILD = -3;
         static int PARENT = -100;
-
+        
         /* used to Make Type-Specific DecTrees*/
         public DecTree()
         {
