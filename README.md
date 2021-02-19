@@ -13,7 +13,7 @@ Elements stored first at any particular address are returned first from that add
 ---
 
 ### Structure:
-Suppose we wish to a `DecTree` which stores `System.String`s called `example` (although `System.String` may be replaced by any object or struct type).
+Suppose we wish to initialize a `DecTree` which stores `System.String`s called `example` (although `System.String` may be replaced by any object or struct type).
 We accomplish this goal most directly with the following code: `DecTree<System.String> example = new DecTree<System.String>();`
 
 `example` and any other `DecTree<System.String>` will have the following fields.
