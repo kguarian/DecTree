@@ -1,4 +1,4 @@
-# DecTree (README INCOMPLETE. Target Finish Date: 3/31/2020)
+# DecTree README) INCOMPLETE. Target Finish Date: 3/31/2020)
 
 ## Overview
 
